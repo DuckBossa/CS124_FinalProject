@@ -6,8 +6,10 @@ import javax.swing.*;
 import java.awt.image.BufferStrategy;
 public class GameWindow{
 	public static final int START_HP = 20;
-	public static final int START_PlAYER_X = 100;
-	public static final int START_PLAY_Y = 100;
+	public static final int START_PlAYER_X = 20;
+	public static final int START_PLAYER_Y = 20;
+	public static final int PLAYER_IMG_WIDTH = 20;
+	public static final int PLAYER_IMG_HEIGHT = 20;
 	public static final int WINDOW_WIDTH = 640;
 	public static final int WINDOW_HEIGHT = 480;
 	public static final int NUM_ENEMY = 5;
@@ -23,13 +25,15 @@ public class GameWindow{
 	private Image img_arrow;
 	private Image img_bg;
 	private MainFrame mf;
+	private boolean[] keys;
 	public GameWindow(){
+		keys = new boolean[5];
 		playerAlive = true;
 		enemy = new ArrayList<Enemy>();
 		arrows = new ArrayList<Arrow>();
 		//public Character(int atk, int def, int vx, int vy, int x, int y,int w, int h, int lvl){
-		player = new Player(1,2,3,4,50,50,80,80,1);
-		mf = new MainFrame(WINDOW_WIDTH,WINDOW_HEIGHT,enemy,player);
+		player = new Player(1,2,3,4,START_PlAYER_X,START_PLAYER_Y,PLAYER_IMG_WIDTH,PLAYER_IMG_HEIGHT,1);
+		mf = new MainFrame(WINDOW_WIDTH,WINDOW_HEIGHT,enemy,player,keys);
 	}
 
 
@@ -41,7 +45,11 @@ public class GameWindow{
 	}
 
 	public void playerAnimate(){
-
+		for(int i = 0 ; i < keys.length; i++){
+			if(keys[i]){
+				player.move(i);
+			}
+		}
 	}
 
 	public void collide(){
@@ -53,6 +61,7 @@ public class GameWindow{
 	}
 
 	public void loop(){
+			playerAnimate();
 			animate();
 			collide();
 			render();
@@ -74,19 +83,70 @@ public class GameWindow{
 
 	class MainFrame extends JFrame{
 		GameCanvas gc;
-
-		public MainFrame(int w, int h, ArrayList<Enemy> enemy, Character player){
+		
+		public MainFrame(int w, int h, ArrayList<Enemy> enemy, Character player, boolean[] keys){
 			setTitle("CS124_Lab04");
 			setSize(w,h);
 			setResizable(false);
 			setDefaultCloseOperation(EXIT_ON_CLOSE);
 			gc = new GameCanvas(enemy,player);
+			gc.setFocusable(false);
+			setFocusable(true);
 			add(gc);
+			addKeyListener(new Keyboard(keys));
 			setVisible(true);
 		}
 
 		public void update(){
 			gc.repaint();
+		}
+
+
+		class Keyboard implements KeyListener{
+			boolean[] keys;
+			public Keyboard(boolean[] keys){
+				this.keys = keys;
+			}
+			public void keyTyped(KeyEvent e){}
+			public void keyPressed(KeyEvent e){
+				switch(e.getKeyChar()){
+					case 'w'://move up
+						keys[0] = true;
+						break;
+					case 'a'://move left
+						keys[1] = true;
+						break; 
+					case 's'://move down
+						keys[2] = true;
+						break;
+					case 'd'://move right
+						keys[3] = true;
+						break;
+					case ' ':
+						keys[4] = true;
+						break;
+				}
+
+			}
+			public void keyReleased(KeyEvent e){
+				switch(e.getKeyChar()){
+					case 'w'://move up
+						keys[0] = false;
+						break;
+					case 'a'://move left
+						keys[1] = false;
+						break; 
+					case 's'://move down
+						keys[2] = false;
+						break;
+					case 'd'://move right
+						keys[3] = false;
+						break;
+					case ' ':
+						keys[4] = false;
+						break;
+				}
+			}
 		}
 
 	}
@@ -127,7 +187,7 @@ public class GameWindow{
 
 	public static void main(String[] args){
 		GameWindow start = new GameWindow();
-
+		start.run();
 	}
 
 
