@@ -21,8 +21,8 @@ public abstract class Character{
 		this.h = h;
 		this.lvl = lvl;
 		hp = lvl*10;
-		face = 0;
-		seq = 0;
+		face = 1;
+		seq = 1;
 		hitbox = new Rectangle2D.Double(x,y,w,h);
 	}
 

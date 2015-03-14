@@ -3,13 +3,16 @@ import java.awt.*;
 import java.awt.event.*;
 import java.io.*;
 import javax.swing.*;
+import javax.imageio.ImageIO;
 import java.awt.image.BufferStrategy;
 public class GameWindow{
 	public static final int START_HP = 20;
+	public static final int FPS = 60;
 	public static final int START_PlAYER_X = 20;
 	public static final int START_PLAYER_Y = 20;
-	public static final int PLAYER_IMG_WIDTH = 20;
-	public static final int PLAYER_IMG_HEIGHT = 20;
+	public static final int PLAYER_IMG_WIDTH = 32;
+	public static final int PLAYER_IMG_HEIGHT = 32;
+	public static final int PLAYER_NUM_FRAMES = 3;
 	public static final int WINDOW_WIDTH = 640;
 	public static final int WINDOW_HEIGHT = 480;
 	public static final int NUM_ENEMY = 5;
@@ -21,16 +24,17 @@ public class GameWindow{
 	private Enemy dummy;
 	private ArrayList<Arrow> arrows;
 	private Character player;
-	private Image img_player;
+	public static Image img_player;
 	private Image img_enemy;
 	private Image img_arrow;
 	private Image img_bg;
 	private MainFrame mf;
 	private boolean[] keys;
 	private EnemyFactory ef;
-	public GameWindow(){
+	public GameWindow()throws IOException{
 		ef = new EnemyFactory();
 		dummy = new Enemy(1,2,3,3,100,100,60,60,1,FOV);
+		img_player = (ImageIO.read(new FileInputStream("img/try.png")));
 		keys = new boolean[5];
 		playerAlive = true;
 		enemy = new ArrayList<Enemy>();
@@ -42,12 +46,7 @@ public class GameWindow{
 	}
 
 	public void init(){
-		//spawn the enemies using the dummy
-		Enemy x = ef.getClone(dummy);
-		Enemy y = ef.getClone(dummy);
-		System.out.println(System.identityHashCode(System.identityHashCode(x)));
-		System.out.println(System.identityHashCode(System.identityHashCode(y)));
-		System.out.println(System.identityHashCode(System.identityHashCode(dummy)));
+		
 	}
 
 	public void animate(){
@@ -58,11 +57,11 @@ public class GameWindow{
 	}
 
 	public void createRangedEnemy(){
-
 	}
 
 	public void createMeleeEnemy(){
-
+		Enemy temp = ef.getClone(dummy);
+		//set states
 	}
 
 	public void playerAnimate(){
@@ -78,7 +77,7 @@ public class GameWindow{
 	}
 
 	public void render(){
-
+		mf.update();
 	}
 
 	public void loop(){
@@ -92,7 +91,7 @@ public class GameWindow{
 		//show frame, run everything;
 		while(playerAlive){
 			try{
-				Thread.sleep(16);
+				Thread.sleep( 1000/FPS );
 				loop();
 			}
 			catch(InterruptedException ie){
@@ -106,7 +105,7 @@ public class GameWindow{
 		GameCanvas gc;
 		
 		public MainFrame(int w, int h, ArrayList<Enemy> enemy, Character player, boolean[] keys){
-			setTitle("CS124_Lab04");
+			setTitle("Final_Project");
 			setSize(w,h);
 			setResizable(false);
 			setDefaultCloseOperation(EXIT_ON_CLOSE);
@@ -181,6 +180,14 @@ public class GameWindow{
 			setBackground(Color.WHITE);//make this an image
 		}
 
+		void drawSpriteFrame(Image source, Graphics2D g2d, int x, int y,
+		                     int columns, int frame, int width, int height){
+		    int frameX = (frame % columns) * width;
+		    int frameY = (frame / columns) * height;
+		    g2d.drawImage(source, x, y, x+width, y+height,
+		                  frameX, frameY, frameX+width, frameY+height, this);
+		}
+
 		public void paint(Graphics g){
 			BufferStrategy bs = getBufferStrategy();
 			if(bs == null){
@@ -189,7 +196,10 @@ public class GameWindow{
 			}
 			Graphics2D g2 = (Graphics2D) g;
 			g2.setColor(Color.LIGHT_GRAY);
+			g2.fillRect(0,0,getWidth(),getHeight());			
+			g2.setColor(Color.RED);
 			g2.draw(player.hitbox);
+			//drawSpriteFrame(img_player,g2,player.x,player.y,player.face,player.seq,PLAYER_IMG_WIDTH,PLAYER_IMG_HEIGHT);
 		}
 
 		public void update(Graphics g){
@@ -206,7 +216,7 @@ public class GameWindow{
 
 	}
 
-	public static void main(String[] args){
+	public static void main(String[] args)throws IOException{
 		GameWindow start = new GameWindow();
 		start.run();
 	}

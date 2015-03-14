@@ -4,8 +4,10 @@ public class Player extends Character{
 		super(atk,def,vx,vy,x,y,w,h,lvl);
 	}
 	
+
+
 	public enum Movement{ // maybe you can change the code to the keycode of the character? maybe.
-		UP(0),DOWN(1),LEFT(2),RIGHT(3),ATTACK(4);
+		UP(0),DOWN(2),LEFT(1),RIGHT(3),ATTACK(4);
 		private int code;
 
 		private Movement(int code){
@@ -19,22 +21,31 @@ public class Player extends Character{
 
 	public void move(int dir){
 		if(dir == Movement.UP.getCode()){
-			System.out.println("up");
+			y-=vy;
 		}
 		else if(dir == Movement.DOWN.getCode()){
-			System.out.println("down");
+			y+=vy;
 		}
 		else if(dir == Movement.LEFT.getCode()){
-			System.out.println("left");
+			x-= vx;
 		}
 		else if(dir == Movement.RIGHT.getCode()){
-			System.out.println("right");
+			x+= vx;
 		}
 		else if(dir == Movement.ATTACK.getCode()){
 			System.out.println("attack");
 		}
 		else{
-			System.out.println("nothing");
 		}
+		if(dir == face){
+			seq++;
+			if(seq >= 3)
+				seq = 0;
+		}
+		else{
+			seq = 0;
+			face = dir;
+		}
+		updateRectangle();
 	}
 }
