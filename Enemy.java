@@ -7,7 +7,6 @@ public class Enemy extends Character implements CloneEnemy{
 	}
 
 	public void move(int dir){
-
 	}
 	
 	public void handle(){

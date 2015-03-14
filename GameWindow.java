@@ -18,6 +18,7 @@ public class GameWindow{
 	private boolean playerAlive;
 
 	private ArrayList<Enemy> enemy;
+	private Enemy dummy;
 	private ArrayList<Arrow> arrows;
 	private Character player;
 	private Image img_player;
@@ -26,22 +27,42 @@ public class GameWindow{
 	private Image img_bg;
 	private MainFrame mf;
 	private boolean[] keys;
+	private EnemyFactory ef;
 	public GameWindow(){
+		ef = new EnemyFactory();
+		dummy = new Enemy(1,2,3,3,100,100,60,60,1,FOV);
 		keys = new boolean[5];
 		playerAlive = true;
 		enemy = new ArrayList<Enemy>();
 		arrows = new ArrayList<Arrow>();
+		init();
 		//public Character(int atk, int def, int vx, int vy, int x, int y,int w, int h, int lvl){
 		player = new Player(1,2,3,4,START_PlAYER_X,START_PLAYER_Y,PLAYER_IMG_WIDTH,PLAYER_IMG_HEIGHT,1);
 		mf = new MainFrame(WINDOW_WIDTH,WINDOW_HEIGHT,enemy,player,keys);
 	}
 
+	public void init(){
+		//spawn the enemies using the dummy
+		Enemy x = ef.getClone(dummy);
+		Enemy y = ef.getClone(dummy);
+		System.out.println(System.identityHashCode(System.identityHashCode(x)));
+		System.out.println(System.identityHashCode(System.identityHashCode(y)));
+		System.out.println(System.identityHashCode(System.identityHashCode(dummy)));
+	}
 
 	public void animate(){
 		for(Enemy e: enemy)
 			e.handle();
 		for(Arrow a: arrows)
 			a.move();
+	}
+
+	public void createRangedEnemy(){
+
+	}
+
+	public void createMeleeEnemy(){
+
 	}
 
 	public void playerAnimate(){

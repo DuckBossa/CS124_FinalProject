@@ -4,7 +4,7 @@ public class Player extends Character{
 		super(atk,def,vx,vy,x,y,w,h,lvl);
 	}
 	
-	public enum Movement{
+	public enum Movement{ // maybe you can change the code to the keycode of the character? maybe.
 		UP(0),DOWN(1),LEFT(2),RIGHT(3),ATTACK(4);
 		private int code;
 
