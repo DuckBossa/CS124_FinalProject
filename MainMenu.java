@@ -1,5 +1,6 @@
 import java.awt.*;
 import java.awt.event.*;
+import javax.swing.*;
 
 /*
  * To change this license header, choose License Headers in Project Properties.
@@ -10,8 +11,9 @@ import java.awt.event.*;
  *
  * @author J.Lo
  */
-public class MainMenu extends View{
+public class MainMenu extends Canvas{
     
+    Launch frame;
     boolean start, load, exit;
     
     public MainMenu(Launch x)
@@ -27,10 +29,12 @@ public class MainMenu extends View{
                     if( e.getX() >= 20 && e.getX() <= 420 )
                     {
                         System.out.println("Started Game");
+                        popUp();
                         //start = true; // start game
                     } else if( e.getX() >= 440 && e.getX() <= 840 )
                     {
                         System.out.println("Loading Game");
+                        popUp();
                         //load = true; // load game
                     } else if( e.getX() >= 860 && e.getX() <= 1260)
                     {
@@ -99,6 +103,44 @@ public class MainMenu extends View{
         g.fillRect(860, 640, 400, 40);
         }*/
         
+    }
+    
+    public void popUp()
+    {
+        JFrame x = new JFrame("Server IP");
+        x.setLayout(new BorderLayout());
+        JPanel buttons = new JPanel();
+        JTextField IPs = new JTextField("Enter Server IP");
+        JButton ok = new JButton("OK");
+        JButton ex = new JButton("CANCEL");
+        ok.addActionListener(
+                new ActionListener(){
+                    public void actionPerformed(ActionEvent ae)
+                    {
+                        try{
+                            frame.setUpConnection(IPs.getText());
+                            x.dispose();
+                        } catch(Exception e)
+                        {
+                            IPs.setText("ERROR WITH I.P.");
+                        }
+                        
+                    }
+        });
+        ex.addActionListener(
+                new ActionListener(){
+                    public void actionPerformed(ActionEvent ae)
+                    {
+                        x.dispose();
+                    }
+        });
+        buttons.add(ok);
+        buttons.add(ex);
+        x.add(IPs, BorderLayout.PAGE_START);
+        x.add(buttons, BorderLayout.PAGE_END);
+        x.setSize(350,80);
+        x.setVisible(true);
+        x.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
     }
     
 }

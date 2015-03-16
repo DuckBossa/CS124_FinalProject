@@ -10,4 +10,6 @@ import java.rmi.*;
  */
 public interface ServerInt extends Remote{
     
+    public int logIn() throws RemoteException;
+    public void logOut(int i) throws RemoteException;
 }

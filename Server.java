@@ -6,6 +6,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
 import java.net.InetAddress;
+import java.util.HashMap;
 
 /*
  * To change this license header, choose License Headers in Project Properties.
@@ -21,13 +22,14 @@ public class Server extends UnicastRemoteObject implements ServerInt{
     int curID = 0; // ID of clients assigned always incrementing even if they quit
     JFrame UI;
     JTextArea log;
+    JScrollPane scroll;
     JLabel head, head1, head2, spawn, max, IP, numEn, numLog;
     JPanel gen, manip, generalData, manipItself, spawnR, maxN;
     JButton spawnPlus, spawnMin, maxPlus, maxMin;
     int spawnRate = 50; // in percent
     int maxNum = 10; // in pieces
-    //HashMap<Integer, Characters> characters;
-    //ArrayList<Characters> enemies;
+    HashMap<Integer, Player> characters; // different hashmaps for different maps (i.e. iba sa town)
+    ArrayList<Enemy> enemies;
     
     public Server() throws RemoteException{
         //characters = new HashMap<Integer, Characters>();
@@ -176,7 +178,8 @@ public class Server extends UnicastRemoteObject implements ServerInt{
         
         log = new JTextArea("Attempting to initialize the server...");
         log.setEditable(false);
-        UI.add(log);
+        scroll = new JScrollPane(log);
+        UI.add(scroll);
         refreshData();
         
         UI.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -186,9 +189,12 @@ public class Server extends UnicastRemoteObject implements ServerInt{
             Naming.rebind("GameServer", this);
         }catch (Exception e){
             System.out.println("error");
+            System.exit(0);
         }
         
         appLog("Server Initialized! \nWELCOME");
+        Thread t = new Thread(new Running());
+        t.start();
     }
     
     public void refreshData(){
@@ -207,25 +213,54 @@ public class Server extends UnicastRemoteObject implements ServerInt{
     
     
     
-    public int logIn(/*Character thisGuy*/){
+    public int logIn(/*Character thisGuy*/) throws RemoteException{
         //characters.put(curID, thisGuy); 
         loggedIn++;
+        appLog("A Client has connected to the server! ID assigned: "+curID);
+        refreshData();
         return curID++;
     }
     
-    /*
-    
-    public void moveChar(int ID, int x, int y)
-    {
-        //change character stuff;
+    public void logOut(int i) throws RemoteException{
+        loggedIn--;
+        refreshData();
+        appLog("Client#"+i+" has disconnected.");
+        //characters.remove(i);
     }
     
-    public ArrayList<Characters> getAllCharacters(){
+   
+    public ArrayList<Player> getAllCharacters(){
         // get All thigns in HashMap thats a Character or store keys?
-    }
+        // iffy with this implementaion VV because I'm not sure what to think just yet until test is done
+        return (ArrayList<Player>)characters.values();
+    } 
     
-    public ArrayList<Characters> getAllEnemies(){
+    public ArrayList<Enemy> getAllEnemies(){
         return enemies;
-    }*/
+    }
+
+    class Running implements Runnable{
+
+        @Override
+        public void run() {
+            while(true)
+            {
+                //System.out.println("chuchu");
+                try{
+                    Thread.sleep(100);
+                }catch(Exception e)
+                {}
+            }
+        }
+        
+    }
+    /** server runs threads **/
+    /** some assumptions:
+     * Running will handle everything that does not need user input, i.e. enemies
+     * If needed animation chuchu for attacks that have lots of animations na walang kinalaman sa character
+     * i.e. ranged laser na malayo sa character na may charging animation chuchu
+     * IF necessary server will hold an attack array just say'n
+     * clarify pls
+     */
     
 }
