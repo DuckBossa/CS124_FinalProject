@@ -17,7 +17,7 @@ public class HealingPotion implements Item {
 	public void activate (Character c) {
 		if (uses<=0) System.out.println ("No more potion.");
 		else {
-			c.health+=(Math.min(5,c.healthMax-c.health));
+			c.hp+=(Math.min(5,c.maxhp-c.hp));
 			uses--;
 		}
 	}
