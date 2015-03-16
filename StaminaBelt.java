@@ -11,10 +11,12 @@ public class StaminaBelt implements Item {
 		return true;
 	}
 	public void use (Character c) {
-		c.stamina += 10;
+		c.vx += 2;
+		c.vy += 2;
 	}
 	public void remove (Character c) {
-		c.stamina -= 10;
+		c.vx -= 2;
+		c.vy -= 2;
 	}
 	public void activate (Character c) {}
 }
