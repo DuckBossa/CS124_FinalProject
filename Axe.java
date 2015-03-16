@@ -11,10 +11,10 @@ public class Axe implements Item {
 		return false;
 	}
 	public void use (Character c) {
-		c.attack += 10;
+		c.atk += 10;
 	}
 	public void remove (Character c) {
-		c.attack -= 10;
+		c.atk -= 10;
 	}
 	public void activate (Character c) {}
 }
