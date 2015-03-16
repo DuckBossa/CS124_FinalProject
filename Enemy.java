@@ -1,3 +1,4 @@
+import java.awt.geom.Rectangle2D;
 public class Enemy extends Character implements CloneEnemy{
 	private int fov;
 	private State state;
@@ -6,9 +7,24 @@ public class Enemy extends Character implements CloneEnemy{
 		this.fov = fov;
 	}
 
-	public void move(int dir){
-	}
 	
+	public Rectangle2D attack(){
+		return hitbox;
+	}
+
+
+
+	public Rectangle2D makeCopyRect(){
+		Rectangle2D rect = null;
+		try{
+			rect = (Rectangle2D) hitbox.clone();
+		}
+		catch (Exception e){
+			e.printStackTrace();
+		}
+		return rect;
+	}
+
 	public void handle(){
 		state.handle();
 	}

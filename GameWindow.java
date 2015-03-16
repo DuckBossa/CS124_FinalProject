@@ -12,16 +12,17 @@ public class GameWindow{
 	public static final int START_PLAYER_Y = 20;
 	public static final int PLAYER_IMG_WIDTH = 32;
 	public static final int PLAYER_IMG_HEIGHT = 32;
+	public static final int ENEMY_IMG_WIDTH = 32;
+	public static final int ENEMY_IMG_HEIGHT = 32;
 	public static final int PLAYER_NUM_FRAMES = 3;
-	public static final int WINDOW_WIDTH = 640;
-	public static final int WINDOW_HEIGHT = 480;
-	public static final int NUM_ENEMY = 5;
+	public static final int WINDOW_WIDTH = 1280;
+	public static final int WINDOW_HEIGHT = 720;
+	public static final int NUM_ENEMY = 6;
 	public static final int FOV = 100;
 
 	private boolean playerAlive;
 
 	private ArrayList<Enemy> enemy;
-	private Enemy dummy;
 	private ArrayList<Arrow> arrows;
 	private Character player;
 	public static Image img_player;
@@ -32,10 +33,9 @@ public class GameWindow{
 	private boolean[] keys;
 	private EnemyFactory ef;
 	public GameWindow()throws IOException{
-		ef = new EnemyFactory();
-		dummy = new Enemy(1,2,3,3,100,100,60,60,1,FOV);
+		ef = new EnemyFactory(new Enemy(1,2,3,3,100,100,ENEMY_IMG_WIDTH,ENEMY_IMG_HEIGHT,1,FOV));
 		img_player = (ImageIO.read(new FileInputStream("img/try.png")));
-		keys = new boolean[5];
+		keys = new boolean[4];
 		playerAlive = true;
 		enemy = new ArrayList<Enemy>();
 		arrows = new ArrayList<Arrow>();
@@ -46,23 +46,20 @@ public class GameWindow{
 	}
 
 	public void init(){
-		
+		for(int i = 1; i <= NUM_ENEMY; i++){
+			enemy.add(ef.createMeleeEnemy());
+		}
 	}
 
 	public void animate(){
-		for(Enemy e: enemy)
+		for(Enemy e: enemy){
 			e.handle();
+		}
 		for(Arrow a: arrows)
 			a.move();
 	}
 
-	public void createRangedEnemy(){
-	}
 
-	public void createMeleeEnemy(){
-		Enemy temp = ef.getClone(dummy);
-		//set states
-	}
 
 	public void playerAnimate(){
 		for(int i = 0 ; i < keys.length; i++){
@@ -72,8 +69,31 @@ public class GameWindow{
 		}
 	}
 
-	public void collide(){
+	public void resolveWalls(Character a){
+		if(a.x < 0){
+			a.x = 0;//if(a.vx < 0) a.vx*=-1;
+		}
+		if(a.y < 0){
+			a.y = 0;
+		}
+		if(a.x + PLAYER_IMG_WIDTH > mf.gc.getWidth()){
+			a.x = mf.gc.getWidth() - PLAYER_IMG_WIDTH; 
+		}
+		if(a.y + PLAYER_IMG_HEIGHT > mf.gc.getHeight()){
+			a.y = mf.gc.getHeight() - PLAYER_IMG_WIDTH;
+		}
+		a.updateRectangle();
+	}
+	
 
+	public void collide(){
+		resolveWalls(player);
+		for(int i = 0; i < enemy.size(); i++){
+			resolveWalls(enemy.get(i));
+			if(enemy.get(i).collide(player.hitbox)){
+				System.out.println("HITTING " + i);
+			}
+		}
 	}
 
 	public void render(){
@@ -88,7 +108,6 @@ public class GameWindow{
 	}
 
 	public void run(){
-		//show frame, run everything;
 		while(playerAlive){
 			try{
 				Thread.sleep( 1000/FPS );
@@ -143,7 +162,6 @@ public class GameWindow{
 						keys[3] = true;
 						break;
 					case ' ':
-						keys[4] = true;
 						break;
 				}
 
@@ -163,7 +181,6 @@ public class GameWindow{
 						keys[3] = false;
 						break;
 					case ' ':
-						keys[4] = false;
 						break;
 				}
 			}
@@ -197,8 +214,14 @@ public class GameWindow{
 			Graphics2D g2 = (Graphics2D) g;
 			g2.setColor(Color.LIGHT_GRAY);
 			g2.fillRect(0,0,getWidth(),getHeight());			
-			g2.setColor(Color.RED);
+			g2.setColor(Color.BLUE);
 			g2.draw(player.hitbox);
+			g2.setColor(Color.RED);
+			for(int i = 0; i < enemy.size(); i++){
+				enemy.get(i).updateRectangle();
+				g2.draw(enemy.get(i).hitbox);
+
+			}
 			//drawSpriteFrame(img_player,g2,player.x,player.y,player.face,player.seq,PLAYER_IMG_WIDTH,PLAYER_IMG_HEIGHT);
 		}
 
