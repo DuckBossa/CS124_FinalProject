@@ -18,13 +18,13 @@ public class GameWindow{
 	public static final int WINDOW_WIDTH = 1280;
 	public static final int WINDOW_HEIGHT = 720;
 	public static final int NUM_ENEMY = 6;
-	public static final int FOV = 100;
+	public static final int FOV = 150;
 
 	private boolean playerAlive;
 
 	private ArrayList<Enemy> enemy;
 	private ArrayList<Arrow> arrows;
-	private Character player;
+	private Player player;
 	public static Image img_player;
 	private Image img_enemy;
 	private Image img_arrow;
@@ -52,9 +52,11 @@ public class GameWindow{
 	}
 
 	public void animate(){
+		enemyAttackMode();
 		for(int i = 0; i < enemy.size(); i++){
 			Enemy e = enemy.get(i);
 			e.handle();
+			e.updateRectangle();
 		}
 		for(Arrow a: arrows)
 			a.move();
@@ -91,11 +93,6 @@ public class GameWindow{
 		resolveWalls(player);
 		for(int i = 0; i < enemy.size(); i++){
 			resolveWalls(enemy.get(i));
-			if(enemy.get(i).collide(player.hitbox)){
-				if(player.takeDamage(enemy.get(i).atk)){
-					playerAlive = false;
-				}
-			}
 		}
 	}
 
@@ -110,8 +107,18 @@ public class GameWindow{
 			render();
 	}
 
+	public void enemyAttackMode(){
+		for(int i = 0; i < enemy.size(); i++){
+			if(player.collide(enemy.get(i).fov_rect)){
+				if(!enemy.get(i).enemyDetect){
+					enemy.get(i).setState(new EnemyAttackState(enemy.get(i),player));
+				}
+			}
+		}
+	}
+
 	public void run(){
-		while(playerAlive){
+		while(player.isAlive()){
 			try{
 				Thread.sleep( 1000/FPS );
 				loop();
@@ -219,11 +226,13 @@ public class GameWindow{
 			g2.fillRect(0,0,getWidth(),getHeight());			
 			g2.setColor(Color.BLUE);
 			g2.draw(player.hitbox);
-			g2.setColor(Color.RED);
+			
 			for(int i = 0; i < enemy.size(); i++){
 				enemy.get(i).updateRectangle();
+				g2.setColor(Color.RED);
 				g2.draw(enemy.get(i).hitbox);
-
+				g2.setColor(Color.BLACK);
+				g2.draw(enemy.get(i).fov_rect);
 			}
 			//drawSpriteFrame(img_player,g2,player.x,player.y,player.face,player.seq,PLAYER_IMG_WIDTH,PLAYER_IMG_HEIGHT);
 		}

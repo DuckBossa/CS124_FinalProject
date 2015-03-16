@@ -32,7 +32,7 @@ public abstract class Character{
 		hitbox = new Rectangle2D.Double(x,y,w,h);
 	}
 
-	public enum Movement{ // maybe you can change the code to the keycode of the character? maybe.
+	public enum Movement{
 		UP(0),LEFT(1),DOWN(2),RIGHT(3);
 		private int code;
 		private Movement(int code){
@@ -115,12 +115,16 @@ public abstract class Character{
 		}
 	}
 
-	public boolean takeDamage(int damage){
+	public void takeDamage(int damage){
 		if(damage - def <= 0)
 			hp--;
 		else{
 			hp -= (damage - def);
 		}
-		return (hp <= 0);
 	}
+
+	public boolean isAlive(){
+		return (hp >= 0);
+	}
+
 }

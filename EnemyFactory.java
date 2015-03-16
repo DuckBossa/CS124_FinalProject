@@ -14,9 +14,10 @@ public class EnemyFactory{
 		int high = 500;
 		int ranx = random.nextInt(high-low) + low;
 		int rany = random.nextInt(high-low) + low;
-		temp.hitbox = e.makeCopyRect();
 		temp.x = ranx;
 		temp.y = rany;
+		temp.fov_rect = e.makeCopyRect(e.fov_rect);
+		temp.hitbox = e.makeCopyRect(e.hitbox);
 		temp.setState(new EnemyPatrolState(temp));
 		temp.updateRectangle();
 		return temp;
@@ -27,10 +28,11 @@ public class EnemyFactory{
 		int high = 500;
 		int ranx = random.nextInt(high-low) + low;
 		int rany = random.nextInt(high-low) + low;
-		temp.hitbox = e.makeCopyRect();
-		temp.setState(new EnemyPatrolState(temp));
 		temp.x = ranx;
 		temp.y = rany;
+		temp.fov_rect = e.makeCopyRect(e.fov_rect);
+		temp.hitbox = e.makeCopyRect(e.hitbox);
+		temp.setState(new EnemyPatrolState(temp));
 		temp.updateRectangle();
 		return temp;
 	}
