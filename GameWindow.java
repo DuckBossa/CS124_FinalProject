@@ -52,7 +52,8 @@ public class GameWindow{
 	}
 
 	public void animate(){
-		for(Enemy e: enemy){
+		for(int i = 0; i < enemy.size(); i++){
+			Enemy e = enemy.get(i);
 			e.handle();
 		}
 		for(Arrow a: arrows)
@@ -91,7 +92,9 @@ public class GameWindow{
 		for(int i = 0; i < enemy.size(); i++){
 			resolveWalls(enemy.get(i));
 			if(enemy.get(i).collide(player.hitbox)){
-				System.out.println("HITTING " + i);
+				if(player.takeDamage(enemy.get(i).atk)){
+					playerAlive = false;
+				}
 			}
 		}
 	}
