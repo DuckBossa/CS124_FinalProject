@@ -11,10 +11,10 @@ public class Dress implements Item {
 		return false;
 	}
 	public void use (Character c) {
-		c.defense += 10;
+		c.def += 10;
 	}
 	public void remove (Character c) {
-		c.defense -= 10;
+		c.def -= 10;
 	}
 	public void activate (Character c) {}
 }
