@@ -11,10 +11,11 @@ public class GameWindow{
 	public static final int START_PlAYER_X = 20;
 	public static final int START_PLAYER_Y = 20;
 	public static final int PLAYER_IMG_WIDTH = 32;
-	public static final int PLAYER_IMG_HEIGHT = 32;
+	public static final int PLAYER_IMG_HEIGHT = 48;
 	public static final int ENEMY_IMG_WIDTH = 32;
-	public static final int ENEMY_IMG_HEIGHT = 32;
-	public static final int PLAYER_NUM_FRAMES = 3;
+	public static final int ENEMY_IMG_HEIGHT = 48;
+	public static final int PLAYER_NUM_FRAMES = 4;
+	public static final int ENEMY_NUM_FRAMES = 4;
 	public static final int WINDOW_WIDTH = 1280;
 	public static final int WINDOW_HEIGHT = 720;
 	public static final int NUM_ENEMY = 6;
@@ -34,14 +35,15 @@ public class GameWindow{
 	private EnemyFactory ef;
 	public GameWindow()throws IOException{
 		ef = new EnemyFactory(new Enemy(1,2,3,3,100,100,ENEMY_IMG_WIDTH,ENEMY_IMG_HEIGHT,1,FOV));
-		img_player = (ImageIO.read(new FileInputStream("img/try.png")));
-		keys = new boolean[4];
+		img_player = (ImageIO.read(new FileInputStream("img/player.png")));
+		img_enemy = (ImageIO.read(new FileInputStream("img/enemy_melee.png")));
+		keys = new boolean[5];
 		playerAlive = true;
 		enemy = new ArrayList<Enemy>();
 		arrows = new ArrayList<Arrow>();
 		init();
 		//public Character(int atk, int def, int vx, int vy, int x, int y,int w, int h, int lvl){
-		player = new Player(1,2,3,4,START_PlAYER_X,START_PLAYER_Y,PLAYER_IMG_WIDTH,PLAYER_IMG_HEIGHT,1);
+		player = new Player(100,2,3,4,START_PlAYER_X,START_PLAYER_Y,PLAYER_IMG_WIDTH,PLAYER_IMG_HEIGHT,1);
 		mf = new MainFrame(WINDOW_WIDTH,WINDOW_HEIGHT,enemy,player,keys);
 	}
 
@@ -65,16 +67,35 @@ public class GameWindow{
 
 
 	public void playerAnimate(){
-		for(int i = 0 ; i < keys.length; i++){
-			if(keys[i]){
-				player.move(i);
+		if(player.attacking){
+			player.move(Player.Movement.UP.getCode());
+			if(player.seq == 3){
+				for(int i = 0 ; i < enemy.size(); i++){
+					Enemy temp = enemy.get(i);
+					if(temp.collide(player.attack())){
+						temp.takeDamage(player.atk);
+						if(!temp.isAlive()){
+							player.gainExp(1);
+							enemy.remove(i);
+							i--;
+						}
+					}
+				}
 			}
+		}
+		else{
+			for(int i = 0 ; i < keys.length; i++){
+				if(keys[i]){
+					player.move(i);
+				}
+			}			
 		}
 	}
 
+
 	public void resolveWalls(Character a){
 		if(a.x < 0){
-			a.x = 0;//if(a.vx < 0) a.vx*=-1;
+			a.x = 0;
 		}
 		if(a.y < 0){
 			a.y = 0;
@@ -83,7 +104,7 @@ public class GameWindow{
 			a.x = mf.gc.getWidth() - PLAYER_IMG_WIDTH; 
 		}
 		if(a.y + PLAYER_IMG_HEIGHT > mf.gc.getHeight()){
-			a.y = mf.gc.getHeight() - PLAYER_IMG_WIDTH;
+			a.y = mf.gc.getHeight() - PLAYER_IMG_HEIGHT;
 		}
 		a.updateRectangle();
 	}
@@ -118,7 +139,7 @@ public class GameWindow{
 	}
 
 	public void run(){
-		while(player.isAlive()){
+		while(true){
 			try{
 				Thread.sleep( 1000/FPS );
 				loop();
@@ -172,6 +193,9 @@ public class GameWindow{
 						keys[3] = true;
 						break;
 					case ' ':
+						keys[4] = true;
+						break;
+					case 'g':
 						break;
 				}
 
@@ -191,6 +215,9 @@ public class GameWindow{
 						keys[3] = false;
 						break;
 					case ' ':
+						keys[4] = false;
+						break;
+					case 'g':
 						break;
 				}
 			}
@@ -208,11 +235,27 @@ public class GameWindow{
 		}
 
 		void drawSpriteFrame(Image source, Graphics2D g2d, int x, int y,
-		                     int columns, int frame, int width, int height){
-		    int frameX = (frame % columns) * width;
-		    int frameY = (frame / columns) * height;
-		    g2d.drawImage(source, x, y, x+width, y+height,
-		                  frameX, frameY, frameX+width, frameY+height, this);
+		                     int face, int seq, int width, int height){
+
+		    int frameX = seq*width;
+		    int frameY = 0;
+		    switch(face){
+		    	case 0:
+		    		frameY = 3*height;
+		    		break;
+		    	case 1:
+		    		frameY = height;
+		    		break;
+		    	case 2:
+		    		frameY = 0;
+		    		break;
+		    	case 3:
+		    		frameY = 2*height;
+		    		break;
+		    }
+
+		    g2d.drawImage(source, x, y, x+width, y+height, //for the 
+		                  frameX, frameY, frameX+width, frameY+height,this);
 		}
 
 		public void paint(Graphics g){
@@ -226,15 +269,20 @@ public class GameWindow{
 			g2.fillRect(0,0,getWidth(),getHeight());			
 			g2.setColor(Color.BLUE);
 			g2.draw(player.hitbox);
+			if(player.attacking && player.seq == 3){
+				g2.setColor(Color.GREEN);
+				g2.draw(player.attack());
+			};
 			
 			for(int i = 0; i < enemy.size(); i++){
-				enemy.get(i).updateRectangle();
+				Enemy e = enemy.get(i);
 				g2.setColor(Color.RED);
-				g2.draw(enemy.get(i).hitbox);
+				g2.draw(e.hitbox);
 				g2.setColor(Color.BLACK);
-				g2.draw(enemy.get(i).fov_rect);
+				g2.draw(e.fov_rect);
+				drawSpriteFrame(img_enemy,g2,e.x,e.y,e.face,e.seq,ENEMY_IMG_WIDTH,ENEMY_IMG_HEIGHT);
 			}
-			//drawSpriteFrame(img_player,g2,player.x,player.y,player.face,player.seq,PLAYER_IMG_WIDTH,PLAYER_IMG_HEIGHT);
+			drawSpriteFrame(img_player,g2,player.x,player.y,player.face,player.seq,PLAYER_IMG_WIDTH,PLAYER_IMG_HEIGHT);
 		}
 
 		public void update(Graphics g){

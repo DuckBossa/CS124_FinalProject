@@ -10,6 +10,7 @@ public abstract class Character{
 	public int face;
 	public int seq;
 	public int maxhp;
+	public int charge;
 	public boolean attacking;
 	public Rectangle2D hitbox;
 
@@ -26,14 +27,15 @@ public abstract class Character{
 		hp = lvl*10;
 		maxhp = hp;
 		exp = 0;
-		face = 1;
+		charge = 0;
+		face = 0;
 		seq = 1;
 		attacking = false;
 		hitbox = new Rectangle2D.Double(x,y,w,h);
 	}
 
 	public enum Movement{
-		UP(0),LEFT(1),DOWN(2),RIGHT(3);
+		UP(0),LEFT(1),DOWN(2),RIGHT(3),ATTACK(4);
 		private int code;
 		private Movement(int code){
 			this.code = code;
@@ -44,47 +46,42 @@ public abstract class Character{
 	}
 
 	public void move(int dir){
-
-		/*
-		if(dir == Movement.UP.getCode()){
-			y-=vy;
-		}
-		else if(dir == Movement.DOWN.getCode()){
-			y+=vy;
-		}
-		else if(dir == Movement.LEFT.getCode()){
-			x-= vx;
-		}
-		else if(dir == Movement.RIGHT.getCode()){
-			x+= vx;
-		}
-		*/
-
-		switch(dir){
-			case 0:
+		if(!attacking){
+			if(dir == Movement.UP.getCode()){
 				y-=vy;
-				break;
-			case 1:
+			}
+			else if(dir == Movement.DOWN.getCode()){
 				y+=vy;
-				break;
-			case 2:
+			}
+			else if(dir == Movement.LEFT.getCode()){
 				x-= vx;
-				break;
-			case 3:
+			}
+			else if(dir == Movement.RIGHT.getCode()){
 				x+= vx;
-				break;
-		}
-		
-		if(dir == face){
-			seq++;
-			if(seq >= 3)
+			}
+			else if(dir == Movement.ATTACK.getCode()){
+				attacking = true;
 				seq = 0;
+				updateRectangle();
+				return;
+			}
+			if(dir == face){
+				seq++;
+				if(seq > 3)
+					seq = 0;
+			}
+			else{
+				seq = 0;
+				face = dir;
+			}
 		}
 		else{
-			seq = 0;
-			face = dir;
+			seq++;
+			if(seq > 3){
+				seq = 0;
+				attacking = false;
+			}
 		}
-		
 		updateRectangle();
 	}
 
@@ -104,12 +101,14 @@ public abstract class Character{
 
 	public void levelUp(){
 		hp = ++lvl * 10;
+		atk++;
+		def++;
 		maxhp = hp; 
 	}
 
 	public void gainExp(int amount){
 		exp += amount;
-		if(exp >= lvl*100){
+		if(exp >= lvl){
 			levelUp();
 			exp = 0;
 		}

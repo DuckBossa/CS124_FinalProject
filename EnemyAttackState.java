@@ -16,7 +16,31 @@ public class EnemyAttackState implements State{
 				double coly = ( (p.y + p.h/2) - (e.y + e.h/2) ); 
 				double mag =  Math.sqrt(colx*colx + coly*coly);
 				e.x += (colx/mag)*3;
-				e.y += (coly/mag)*5;
+				e.y += (coly/mag)*3;
+				if( colx < 0 ){
+					if(e.face != Character.Movement.LEFT.getCode()){
+						e.face = 1;
+						e.seq = 0;
+					}
+					else{
+						e.seq++;
+						if(e.seq >= 3){
+							e.seq = 0;
+						}
+					}
+				}
+				else{
+					if(e.face != Character.Movement.RIGHT.getCode()){
+						e.face = 3;
+						e.seq = 0;
+					}
+					else{
+						e.seq++;
+						if(e.seq >= 3){
+							e.seq = 0;
+						}
+					}
+				}
 			}
 		}
 		else{

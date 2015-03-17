@@ -4,6 +4,7 @@ public class Enemy extends Character implements CloneEnemy{
 	public Rectangle2D fov_rect;
 	public State state;
 	public boolean enemyDetect;
+
 	public Enemy(int atk, int def, int vx, int vy, int x, int y,int w, int h, int lvl, int fov){ // can be used for both melee and ranged, just depends on the handle
 		super(atk,def,vx,vy,x,y,w,h,lvl);
 		this.fov = fov;
@@ -32,8 +33,6 @@ public class Enemy extends Character implements CloneEnemy{
 		}
 		return rect;
 	}
-
-
 
 	public void handle(){
 		state.handle();
