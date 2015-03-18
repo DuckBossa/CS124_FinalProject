@@ -1,10 +1,15 @@
 import java.util.Random;
+import java.util.ArrayList;
 public class EnemyFactory{
 	private Random random;
+	private Player p;
+	private ArrayList<Arrow> arrow;
 	private Enemy e;
-	public EnemyFactory(Enemy e){
+	public EnemyFactory(Enemy e, Player p, ArrayList<Arrow> arrow){
 		random = new Random();
 		this.e = e;
+		this.p = p;
+		this.arrow = arrow;
 	}
 
 
@@ -16,9 +21,11 @@ public class EnemyFactory{
 		int rany = random.nextInt(high-low) + low;
 		temp.x = ranx;
 		temp.y = rany;
+		temp.fov = GameWindow.FOV_RANGED;
 		temp.fov_rect = e.makeCopyRect(e.fov_rect);
 		temp.hitbox = e.makeCopyRect(e.hitbox);
-		temp.setState(new EnemyPatrolState(temp));
+		temp.setState(new EnemyRangedState(temp,p,arrow));
+		temp.isRanged = true;
 		temp.updateRectangle();
 		return temp;
 	}
@@ -31,8 +38,10 @@ public class EnemyFactory{
 		temp.x = ranx;
 		temp.y = rany;
 		temp.fov_rect = e.makeCopyRect(e.fov_rect);
+		temp.fov = GameWindow.FOV_MELEE;
 		temp.hitbox = e.makeCopyRect(e.hitbox);
-		temp.setState(new EnemyPatrolState(temp));
+		temp.setState(new EnemyMeleeState(temp,p));
+		temp.isRanged = false;
 		temp.updateRectangle();
 		return temp;
 	}

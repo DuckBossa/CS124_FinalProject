@@ -1,15 +1,19 @@
 import java.awt.geom.Rectangle2D;
+import java.util.Random;
 public class Enemy extends Character implements CloneEnemy{
 	public int fov;
 	public Rectangle2D fov_rect;
 	public State state;
 	public boolean enemyDetect;
-
-	public Enemy(int atk, int def, int vx, int vy, int x, int y,int w, int h, int lvl, int fov){ // can be used for both melee and ranged, just depends on the handle
+	public boolean isRanged;
+	public Random random;
+	public Enemy(int atk, int def, int vx, int vy, int x, int y,int w, int h, int lvl, int fov){
 		super(atk,def,vx,vy,x,y,w,h,lvl);
+		random = new Random();
 		this.fov = fov;
 		fov_rect = new Rectangle2D.Double(x-fov/2, y-fov/2,fov,fov);
 		enemyDetect = false;
+		isRanged = false;
 	}
 
 	
@@ -42,6 +46,10 @@ public class Enemy extends Character implements CloneEnemy{
 		this.state = state;
 	}
 
+	public boolean isRanged(){
+		return isRanged;
+	}
+
 	public Enemy makeCopy(){
 		Enemy cloned = null;
 		try{
@@ -52,5 +60,11 @@ public class Enemy extends Character implements CloneEnemy{
 		}
 		return cloned;
 	}
+
+	public boolean roll(){
+		boolean val = random.nextInt(16) == 0;
+		return val;
+	}
+
 
 }

@@ -35,7 +35,7 @@ public abstract class Character{
 	}
 
 	public enum Movement{
-		UP(0),LEFT(1),DOWN(2),RIGHT(3),ATTACK(4);
+		UP(0),LEFT(1),DOWN(2),RIGHT(3),ATTACK(4),;
 		private int code;
 		private Movement(int code){
 			this.code = code;

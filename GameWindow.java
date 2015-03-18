@@ -14,61 +14,88 @@ public class GameWindow{
 	public static final int PLAYER_IMG_HEIGHT = 48;
 	public static final int ENEMY_IMG_WIDTH = 32;
 	public static final int ENEMY_IMG_HEIGHT = 48;
+	public static final int ARROW_W = 40;
+	public static final int ARROW_H = 15;
 	public static final int PLAYER_NUM_FRAMES = 4;
 	public static final int ENEMY_NUM_FRAMES = 4;
 	public static final int WINDOW_WIDTH = 1280;
 	public static final int WINDOW_HEIGHT = 720;
-	public static final int NUM_ENEMY = 6;
-	public static final int FOV = 150;
+	public static final int NUM_ENEMY_MELEE = 5;
+	public static final int NUM_ENEM_RANGED = 5;
+	public static final int FOV_MELEE = 150;
+	public static final int FOV_RANGED = 300;
 
 	private boolean playerAlive;
 
 	private ArrayList<Enemy> enemy;
-	private ArrayList<Arrow> arrows;
+	private ArrayList<Arrow> arrow;
 	private Player player;
 	public static Image img_player;
-	private Image img_enemy;
+	private Image img_enemy_melee;
+	private Image img_enemy_ranged;
 	private Image img_arrow;
 	private Image img_bg;
 	private MainFrame mf;
 	private boolean[] keys;
+	private int key;
 	private EnemyFactory ef;
+	private Random random;
+	private int recharge;
+	private ArrayList<Integer> buildme;
 	public GameWindow()throws IOException{
-		ef = new EnemyFactory(new Enemy(1,2,3,3,100,100,ENEMY_IMG_WIDTH,ENEMY_IMG_HEIGHT,1,FOV));
+		buildme = new ArrayList<Integer>();
+		key = (int) '.';
+		random = new Random();
 		img_player = (ImageIO.read(new FileInputStream("img/player.png")));
-		img_enemy = (ImageIO.read(new FileInputStream("img/enemy_melee.png")));
+		img_enemy_melee = (ImageIO.read(new FileInputStream("img/enemy_melee.png")));
+		img_enemy_ranged = (ImageIO.read(new FileInputStream("img/enemy_ranged.png")));
 		keys = new boolean[5];
 		playerAlive = true;
+		recharge = 0;
 		enemy = new ArrayList<Enemy>();
-		arrows = new ArrayList<Arrow>();
+		arrow = new ArrayList<Arrow>();
+		player = new Player(100,2,5,5,START_PlAYER_X,START_PLAYER_Y,PLAYER_IMG_WIDTH,PLAYER_IMG_HEIGHT,1);
+		ef = new EnemyFactory(new Enemy(1,2,3,3,100,100,ENEMY_IMG_WIDTH,ENEMY_IMG_HEIGHT,1,0),player,arrow);
 		init();
 		//public Character(int atk, int def, int vx, int vy, int x, int y,int w, int h, int lvl){
-		player = new Player(100,2,3,4,START_PlAYER_X,START_PLAYER_Y,PLAYER_IMG_WIDTH,PLAYER_IMG_HEIGHT,1);
-		mf = new MainFrame(WINDOW_WIDTH,WINDOW_HEIGHT,enemy,player,keys);
+		mf = new MainFrame(WINDOW_WIDTH,WINDOW_HEIGHT,enemy,player,arrow,buildme);
 	}
 
 	public void init(){
-		for(int i = 1; i <= NUM_ENEMY; i++){
+		for(int i = 1; i <= NUM_ENEMY_MELEE; i++){
 			enemy.add(ef.createMeleeEnemy());
+		}
+		for(int i = 1; i <= NUM_ENEM_RANGED; i++){
+			enemy.add(ef.createRangedEnemy());
 		}
 	}
 
 	public void animate(){
-		enemyAttackMode();
 		for(int i = 0; i < enemy.size(); i++){
 			Enemy e = enemy.get(i);
 			e.handle();
 			e.updateRectangle();
 		}
-		for(Arrow a: arrows)
+		for(int i = 0; i < arrow.size(); i++){
+			Arrow a = arrow.get(i);
 			a.move();
+			if(a.motionLife()){
+				if(player.collide(a.hitbox)){
+					player.takeDamage(a.dmg);
+					arrow.remove(i--);
+				}
+			}
+			else{
+				arrow.remove(i--);
+			}
+		}
 	}
 
 
 
 	public void playerAnimate(){
 		if(player.attacking){
-			player.move(Player.Movement.UP.getCode());
+			player.move(Player.Movement.ATTACK.getCode());
 			if(player.seq == 3){
 				for(int i = 0 ; i < enemy.size(); i++){
 					Enemy temp = enemy.get(i);
@@ -76,6 +103,7 @@ public class GameWindow{
 						temp.takeDamage(player.atk);
 						if(!temp.isAlive()){
 							player.gainExp(1);
+							player.gold += random.nextInt(temp.lvl) + 1;
 							enemy.remove(i);
 							i--;
 						}
@@ -84,11 +112,7 @@ public class GameWindow{
 			}
 		}
 		else{
-			for(int i = 0 ; i < keys.length; i++){
-				if(keys[i]){
-					player.move(i);
-				}
-			}			
+			player.execute(key);						
 		}
 	}
 
@@ -121,21 +145,25 @@ public class GameWindow{
 		mf.update();
 	}
 
+
+	public void addEnemies(){
+		if(enemy.size() < NUM_ENEM_RANGED + NUM_ENEMY_MELEE){
+			if(--recharge <= 0){
+				recharge = 80;
+				enemy.add(ef.createMeleeEnemy());
+				enemy.add(ef.createRangedEnemy());
+			}
+
+		}
+	}
+
 	public void loop(){
+			addEnemies();
 			playerAnimate();
 			animate();
 			collide();
 			render();
-	}
 
-	public void enemyAttackMode(){
-		for(int i = 0; i < enemy.size(); i++){
-			if(player.collide(enemy.get(i).fov_rect)){
-				if(!enemy.get(i).enemyDetect){
-					enemy.get(i).setState(new EnemyAttackState(enemy.get(i),player));
-				}
-			}
-		}
 	}
 
 	public void run(){
@@ -153,13 +181,14 @@ public class GameWindow{
 
 	class MainFrame extends JFrame{
 		GameCanvas gc;
-		
-		public MainFrame(int w, int h, ArrayList<Enemy> enemy, Character player, boolean[] keys){
+		ArrayList<Integer> buildme;
+		public MainFrame(int w, int h, ArrayList<Enemy> enemy, Character player, ArrayList<Arrow> arrow, ArrayList<Integer> buildme){
+			this.buildme = buildme;
 			setTitle("Final_Project");
 			setSize(w,h);
 			setResizable(false);
 			setDefaultCloseOperation(EXIT_ON_CLOSE);
-			gc = new GameCanvas(enemy,player);
+			gc = new GameCanvas(enemy,player,arrow);
 			gc.setFocusable(false);
 			setFocusable(true);
 			add(gc);
@@ -177,8 +206,16 @@ public class GameWindow{
 			public Keyboard(boolean[] keys){
 				this.keys = keys;
 			}
-			public void keyTyped(KeyEvent e){}
+			public void keyTyped(KeyEvent e){
+				if(e.getKeyChar() == 'g'){
+					player.itemActivate();
+				}
+			}
 			public void keyPressed(KeyEvent e){
+				if(player.hm.containsKey((int) e.getKeyChar())){
+					key = (int) e.getKeyChar();
+				}
+				/*
 				switch(e.getKeyChar()){
 					case 'w'://move up
 						keys[0] = true;
@@ -195,12 +232,13 @@ public class GameWindow{
 					case ' ':
 						keys[4] = true;
 						break;
-					case 'g':
-						break;
-				}
+				}*/
 
 			}
 			public void keyReleased(KeyEvent e){
+
+				key = (int) '.';
+				/*
 				switch(e.getKeyChar()){
 					case 'w'://move up
 						keys[0] = false;
@@ -219,7 +257,7 @@ public class GameWindow{
 						break;
 					case 'g':
 						break;
-				}
+				}*/
 			}
 		}
 
@@ -227,11 +265,13 @@ public class GameWindow{
 
 	class GameCanvas extends Canvas{
 		ArrayList<Enemy> enemy;
+		ArrayList<Arrow> arrow;
 		Character player;
-		public GameCanvas(ArrayList<Enemy> enemy, Character player){
+		public GameCanvas(ArrayList<Enemy> enemy, Character player, ArrayList<Arrow> arrow){
 			this.player = player;
 			this.enemy = enemy;
-			setBackground(Color.WHITE);//make this an image
+			this.arrow = arrow;
+			setBackground(Color.WHITE);
 		}
 
 		void drawSpriteFrame(Image source, Graphics2D g2d, int x, int y,
@@ -267,8 +307,6 @@ public class GameWindow{
 			Graphics2D g2 = (Graphics2D) g;
 			g2.setColor(Color.LIGHT_GRAY);
 			g2.fillRect(0,0,getWidth(),getHeight());			
-			g2.setColor(Color.BLUE);
-			g2.draw(player.hitbox);
 			if(player.attacking && player.seq == 3){
 				g2.setColor(Color.GREEN);
 				g2.draw(player.attack());
@@ -276,11 +314,17 @@ public class GameWindow{
 			
 			for(int i = 0; i < enemy.size(); i++){
 				Enemy e = enemy.get(i);
-				g2.setColor(Color.RED);
-				g2.draw(e.hitbox);
-				g2.setColor(Color.BLACK);
-				g2.draw(e.fov_rect);
-				drawSpriteFrame(img_enemy,g2,e.x,e.y,e.face,e.seq,ENEMY_IMG_WIDTH,ENEMY_IMG_HEIGHT);
+				if(e.isRanged()){
+					drawSpriteFrame(img_enemy_ranged,g2,e.x,e.y,e.face,e.seq,ENEMY_IMG_WIDTH,ENEMY_IMG_HEIGHT);
+				}
+				else{
+					drawSpriteFrame(img_enemy_melee,g2,e.x,e.y,e.face,e.seq,ENEMY_IMG_WIDTH,ENEMY_IMG_HEIGHT);	
+				}
+			}
+			g2.setColor(Color.ORANGE);
+			for(int i = 0; i < arrow.size(); i++){
+				Arrow a = arrow.get(i);
+				g2.draw(a.hitbox);
 			}
 			drawSpriteFrame(img_player,g2,player.x,player.y,player.face,player.seq,PLAYER_IMG_WIDTH,PLAYER_IMG_HEIGHT);
 		}
