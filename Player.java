@@ -27,6 +27,10 @@ public class Player extends Character{
 		map.put("item","g");
 
 	}
+
+	public CharacterMemento createMemento(){
+		return new CharacterMemento(this);
+	}
 	
 	public Rectangle2D attack(){
 		Rectangle2D temp = new Rectangle2D.Double((int)(x - GameWindow.PLAYER_ATTACK_W/2 + w/2),(int)(y - GameWindow.PLAYER_ATTACK_H/2 + h/2),GameWindow.PLAYER_ATTACK_W,GameWindow.PLAYER_ATTACK_H);
