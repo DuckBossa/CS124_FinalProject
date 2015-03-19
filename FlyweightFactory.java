@@ -11,7 +11,7 @@ class FlyweightFactory {
 	public FlyweightFactory() {
 		pool = new HashMap<String, BufferedImage>();
 	}
-	public BufferedImage getImage( String filename) {
+	public BufferedImage getImage(String filename){
 		if (!pool.containsKey(filename)) {
 			try {
 				BufferedImage img = ImageIO.read(new File(filename));

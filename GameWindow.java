@@ -23,8 +23,8 @@ public class GameWindow{
 	public static final int ARROW_H = 15;
 	public static final int PLAYER_NUM_FRAMES = 4;
 	public static final int ENEMY_NUM_FRAMES = 4;
-	public static final int WINDOW_WIDTH = 1280;
-	public static final int WINDOW_HEIGHT = 720;
+	public static final int WINDOW_WIDTH = 959;
+	public static final int WINDOW_HEIGHT = 623;
 	public static final int NUM_ENEMY_MELEE = 5;
 	public static final int NUM_ENEM_RANGED = 5;
 	public static final int FOV_MELEE = 150;
@@ -35,27 +35,28 @@ public class GameWindow{
 	private ArrayList<Enemy> enemy;
 	private ArrayList<Arrow> arrow;
 	private Player player;
-	private Image img_player;
-	private Image img_enemy_melee;
-	private Image img_enemy_ranged;
-	private Image img_arrow;
-	private Image img_attack;
-	private Image img_bg;
+	private String img_player;
+	private String img_enemy_melee;
+	private String img_enemy_ranged;
+	private String img_arrow;
+	private String img_attack;
+	private String img_bg;
 	private MainFrame mf;
 	private int key;
 	private EnemyFactory ef;
 	private Random random;
 	private int recharge;
-	private ArrayList<Integer> buildme;
+	private FlyweightFactory ff;
 	public GameWindow()throws IOException{
-		buildme = new ArrayList<Integer>();
 		key = (int) '.';
 		random = new Random();
-		img_player = (ImageIO.read(new FileInputStream("img/player.png")));
-		img_enemy_melee = (ImageIO.read(new FileInputStream("img/enemy_melee.png")));
-		img_enemy_ranged = (ImageIO.read(new FileInputStream("img/enemy_ranged.png")));
-		img_arrow = (ImageIO.read(new FileInputStream("img/arrow.png")));
-		img_attack = (ImageIO.read(new FileInputStream("img/player_attack.png")));
+		img_player = "img/player.png";
+		img_enemy_melee = "img/enemy_melee.png";
+		img_enemy_ranged = "img/enemy_ranged.png";
+		img_arrow = "img/arrow.png";
+		img_attack = "img/player_attack.png";
+		img_bg = "img/map.png";
+		ff = new FlyweightFactory();
 		playerAlive = true;
 		recharge = 0;
 		enemy = new ArrayList<Enemy>();
@@ -64,7 +65,7 @@ public class GameWindow{
 		ef = new EnemyFactory(new Enemy(1,2,3,3,100,100,ENEMY_IMG_WIDTH,ENEMY_IMG_HEIGHT,1,0),player,arrow);
 		init();
 		//public Character(int atk, int def, int vx, int vy, int x, int y,int w, int h, int lvl){
-		mf = new MainFrame(WINDOW_WIDTH,WINDOW_HEIGHT,enemy,player,arrow,buildme);
+		mf = new MainFrame(WINDOW_WIDTH,WINDOW_HEIGHT,enemy,player,arrow,ff);
 	}
 
 	public void init(){
@@ -108,7 +109,7 @@ public class GameWindow{
 					if(temp.collide(player.attack())){
 						temp.takeDamage(player.atk);
 						if(!temp.isAlive()){
-							player.gainExp(1);
+							player.gainExp(temp.lvl);
 							player.gold += random.nextInt(temp.lvl) + 1;
 							enemy.remove(i);
 							i--;
@@ -187,14 +188,12 @@ public class GameWindow{
 
 	class MainFrame extends JFrame{
 		GameCanvas gc;
-		ArrayList<Integer> buildme;
-		public MainFrame(int w, int h, ArrayList<Enemy> enemy, Character player, ArrayList<Arrow> arrow, ArrayList<Integer> buildme){
-			this.buildme = buildme;
+		public MainFrame(int w, int h, ArrayList<Enemy> enemy, Character player, ArrayList<Arrow> arrow,FlyweightFactory ff){
 			setTitle("Final_Project");
 			setSize(w,h);
 			setResizable(false);
 			setDefaultCloseOperation(EXIT_ON_CLOSE);
-			gc = new GameCanvas(enemy,player,arrow);
+			gc = new GameCanvas(enemy,player,arrow,ff);
 			gc.setFocusable(false);
 			setFocusable(true);
 			add(gc);
@@ -226,8 +225,10 @@ public class GameWindow{
 	class GameCanvas extends Canvas{
 		ArrayList<Enemy> enemy;
 		ArrayList<Arrow> arrow;
+		FlyweightFactory ff;
 		Character player;
-		public GameCanvas(ArrayList<Enemy> enemy, Character player, ArrayList<Arrow> arrow){
+		public GameCanvas(ArrayList<Enemy> enemy, Character player, ArrayList<Arrow> arrow, FlyweightFactory ff){
+			this.ff = ff;
 			this.player = player;
 			this.enemy = enemy;
 			this.arrow = arrow;
@@ -273,35 +274,26 @@ public class GameWindow{
 				return;
 			}
 			Graphics2D g2 = (Graphics2D) g;
-			g2.setColor(Color.LIGHT_GRAY);
-			g2.fillRect(0,0,getWidth(),getHeight());			
+			g2.drawImage(ff.getImage(img_bg),0,0,null);			
 			if(player.attacking){
-				g2.setColor(Color.GREEN);
-
-				/*
-		public void drawAttackFrame(Image source, Graphics2D g2, int x, int y,
-									 int col, int width, int height, int seq)
-				*/
-
-				drawAttackFrame(img_attack,g2,player.x - PLAYER_ATTACK_W/2 + player.w/2 ,player.y - PLAYER_ATTACK_H/2 + player.h/2 ,ATTACK_COL,PLAYER_ATTACK_W,PLAYER_ATTACK_H,player.seq);
-				g2.draw(player.attack());
+				drawAttackFrame(ff.getImage(img_attack),g2,player.x - PLAYER_ATTACK_W/2 + player.w/2 ,player.y - PLAYER_ATTACK_H/2 + player.h/2 ,ATTACK_COL,PLAYER_ATTACK_W,PLAYER_ATTACK_H,player.seq);
 			};
 			
 			for(int i = 0; i < enemy.size(); i++){
 				Enemy e = enemy.get(i);
 				if(e.isRanged()){
-					drawSpriteFrame(img_enemy_ranged,g2,e.x,e.y,e.face,e.seq,ENEMY_IMG_WIDTH,ENEMY_IMG_HEIGHT);
+					drawSpriteFrame(ff.getImage(img_enemy_ranged),g2,e.x,e.y,e.face,e.seq,ENEMY_IMG_WIDTH,ENEMY_IMG_HEIGHT);
 				}
 				else{
-					drawSpriteFrame(img_enemy_melee,g2,e.x,e.y,e.face,e.seq,ENEMY_IMG_WIDTH,ENEMY_IMG_HEIGHT);	
+					drawSpriteFrame(ff.getImage(img_enemy_melee),g2,e.x,e.y,e.face,e.seq,ENEMY_IMG_WIDTH,ENEMY_IMG_HEIGHT);	
 				}
 			}
 			g2.setColor(Color.ORANGE);
 			for(int i = 0; i < arrow.size(); i++){
 				Arrow a = arrow.get(i);
-				g2.drawImage(img_arrow,a.x,a.y,Color.LIGHT_GRAY,null);
+				g2.drawImage(ff.getImage(img_arrow),a.x,a.y,Color.LIGHT_GRAY,null);
 			}
-			drawSpriteFrame(img_player,g2,player.x,player.y,player.face,player.seq,PLAYER_IMG_WIDTH,PLAYER_IMG_HEIGHT);
+			drawSpriteFrame(ff.getImage(img_player),g2,player.x,player.y,player.face,player.seq,PLAYER_IMG_WIDTH,PLAYER_IMG_HEIGHT);
 		}
 
 		public void update(Graphics g){
