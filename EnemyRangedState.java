@@ -20,7 +20,7 @@ public class EnemyRangedState implements State{
 				double colx = ( (p.x + p.w/2) - (e.x + e.w/2) );
 				double coly = ( (p.y + p.h/2) - (e.y + e.h/2) ); 
 				double mag =  Math.sqrt(colx*colx + coly*coly);
-				arrow.add(new Arrow(e.x,e.y,colx/mag*3,coly/mag*3,5,40,15));
+				arrow.add(new Arrow(e.x,e.y,colx/mag*3,coly/mag*3,5,GameWindow.ARROW_W,GameWindow.ARROW_H));
 			}
 			else{
 				recharge--;

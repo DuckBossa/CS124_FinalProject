@@ -77,7 +77,7 @@ public abstract class Character{
 		}
 		else{
 			seq++;
-			if(seq > 3){
+			if(seq > GameWindow.ATTACK_FRAMES){
 				seq = 0;
 				attacking = false;
 			}

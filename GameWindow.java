@@ -14,7 +14,12 @@ public class GameWindow{
 	public static final int PLAYER_IMG_HEIGHT = 48;
 	public static final int ENEMY_IMG_WIDTH = 32;
 	public static final int ENEMY_IMG_HEIGHT = 48;
-	public static final int ARROW_W = 40;
+	public static final int PLAYER_ATTACK_W = 192;
+	public static final int PLAYER_ATTACK_H = 192;
+	public static final int ATTACK_FRAMES = 18;
+	public static final int ATTACK_COL = 5;
+	public static final int ATTACK_ROW = 4;
+	public static final int ARROW_W = 60;
 	public static final int ARROW_H = 15;
 	public static final int PLAYER_NUM_FRAMES = 4;
 	public static final int ENEMY_NUM_FRAMES = 4;
@@ -30,13 +35,13 @@ public class GameWindow{
 	private ArrayList<Enemy> enemy;
 	private ArrayList<Arrow> arrow;
 	private Player player;
-	public static Image img_player;
+	private Image img_player;
 	private Image img_enemy_melee;
 	private Image img_enemy_ranged;
 	private Image img_arrow;
+	private Image img_attack;
 	private Image img_bg;
 	private MainFrame mf;
-	private boolean[] keys;
 	private int key;
 	private EnemyFactory ef;
 	private Random random;
@@ -49,7 +54,8 @@ public class GameWindow{
 		img_player = (ImageIO.read(new FileInputStream("img/player.png")));
 		img_enemy_melee = (ImageIO.read(new FileInputStream("img/enemy_melee.png")));
 		img_enemy_ranged = (ImageIO.read(new FileInputStream("img/enemy_ranged.png")));
-		keys = new boolean[5];
+		img_arrow = (ImageIO.read(new FileInputStream("img/arrow.png")));
+		img_attack = (ImageIO.read(new FileInputStream("img/player_attack.png")));
 		playerAlive = true;
 		recharge = 0;
 		enemy = new ArrayList<Enemy>();
@@ -96,7 +102,7 @@ public class GameWindow{
 	public void playerAnimate(){
 		if(player.attacking){
 			player.move(Player.Movement.ATTACK.getCode());
-			if(player.seq == 3){
+			if(player.seq == 14){
 				for(int i = 0 ; i < enemy.size(); i++){
 					Enemy temp = enemy.get(i);
 					if(temp.collide(player.attack())){
@@ -192,7 +198,7 @@ public class GameWindow{
 			gc.setFocusable(false);
 			setFocusable(true);
 			add(gc);
-			addKeyListener(new Keyboard(keys));
+			addKeyListener(new Keyboard());
 			setVisible(true);
 		}
 
@@ -202,62 +208,16 @@ public class GameWindow{
 
 
 		class Keyboard implements KeyListener{
-			boolean[] keys;
-			public Keyboard(boolean[] keys){
-				this.keys = keys;
+			public Keyboard(){
 			}
-			public void keyTyped(KeyEvent e){
-				if(e.getKeyChar() == 'g'){
-					player.itemActivate();
-				}
-			}
+			public void keyTyped(KeyEvent e){}
 			public void keyPressed(KeyEvent e){
 				if(player.hm.containsKey((int) e.getKeyChar())){
 					key = (int) e.getKeyChar();
 				}
-				/*
-				switch(e.getKeyChar()){
-					case 'w'://move up
-						keys[0] = true;
-						break;
-					case 'a'://move left
-						keys[1] = true;
-						break; 
-					case 's'://move down
-						keys[2] = true;
-						break;
-					case 'd'://move right
-						keys[3] = true;
-						break;
-					case ' ':
-						keys[4] = true;
-						break;
-				}*/
-
 			}
 			public void keyReleased(KeyEvent e){
-
 				key = (int) '.';
-				/*
-				switch(e.getKeyChar()){
-					case 'w'://move up
-						keys[0] = false;
-						break;
-					case 'a'://move left
-						keys[1] = false;
-						break; 
-					case 's'://move down
-						keys[2] = false;
-						break;
-					case 'd'://move right
-						keys[3] = false;
-						break;
-					case ' ':
-						keys[4] = false;
-						break;
-					case 'g':
-						break;
-				}*/
 			}
 		}
 
@@ -274,7 +234,15 @@ public class GameWindow{
 			setBackground(Color.WHITE);
 		}
 
-		void drawSpriteFrame(Image source, Graphics2D g2d, int x, int y,
+		public void drawAttackFrame(Image source, Graphics2D g2d, int x, int y,
+									 int col, int width, int height, int seq){
+			int frameX = (seq%col) * width;
+			int frameY = (seq/col) * height;
+			g2d.drawImage(source,x,y,x+width,y+height,
+						frameX,frameY,frameX+width,frameY+height,this);
+		}
+
+		public void drawSpriteFrame(Image source, Graphics2D g2d, int x, int y,
 		                     int face, int seq, int width, int height){
 
 		    int frameX = seq*width;
@@ -294,7 +262,7 @@ public class GameWindow{
 		    		break;
 		    }
 
-		    g2d.drawImage(source, x, y, x+width, y+height, //for the 
+		    g2d.drawImage(source, x, y, x+width, y+height, 
 		                  frameX, frameY, frameX+width, frameY+height,this);
 		}
 
@@ -307,8 +275,15 @@ public class GameWindow{
 			Graphics2D g2 = (Graphics2D) g;
 			g2.setColor(Color.LIGHT_GRAY);
 			g2.fillRect(0,0,getWidth(),getHeight());			
-			if(player.attacking && player.seq == 3){
+			if(player.attacking){
 				g2.setColor(Color.GREEN);
+
+				/*
+		public void drawAttackFrame(Image source, Graphics2D g2, int x, int y,
+									 int col, int width, int height, int seq)
+				*/
+
+				drawAttackFrame(img_attack,g2,player.x - PLAYER_ATTACK_W/2 + player.w/2 ,player.y - PLAYER_ATTACK_H/2 + player.h/2 ,ATTACK_COL,PLAYER_ATTACK_W,PLAYER_ATTACK_H,player.seq);
 				g2.draw(player.attack());
 			};
 			
@@ -324,7 +299,7 @@ public class GameWindow{
 			g2.setColor(Color.ORANGE);
 			for(int i = 0; i < arrow.size(); i++){
 				Arrow a = arrow.get(i);
-				g2.draw(a.hitbox);
+				g2.drawImage(img_arrow,a.x,a.y,Color.LIGHT_GRAY,null);
 			}
 			drawSpriteFrame(img_player,g2,player.x,player.y,player.face,player.seq,PLAYER_IMG_WIDTH,PLAYER_IMG_HEIGHT);
 		}
