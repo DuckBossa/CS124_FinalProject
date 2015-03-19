@@ -1,5 +1,8 @@
 import java.awt.*;
 import java.awt.event.*;
+import java.awt.image.*;
+import java.io.File;
+import javax.imageio.*;
 import javax.swing.*;
 
 /*
@@ -15,28 +18,39 @@ public class MainMenu extends Canvas{
     
     Launch frame;
     boolean start, load, exit;
+    BufferedImage bg, b1, b2, b3;
     
     public MainMenu(Launch x)
     {
         frame = x; 
+        try{
+            bg = ImageIO.read(new File("img/background.png"));
+            b1 = ImageIO.read(new File("img/s.png"));
+            b2 = ImageIO.read(new File("img/l.png"));
+            b3 = ImageIO.read(new File("img/e.png"));
+        } catch(Exception e)
+        {
+            System.out.println("not found");
+            e.printStackTrace();
+        }
         this.addMouseListener(new MouseListener(){
 
             @Override
             public void mouseClicked(MouseEvent e) {
                
-                if(e.getY() >= 640 && e.getY() <= 680)
+                if(e.getY() >= 20 && e.getY() <= 43)
                 {
-                    if( e.getX() >= 20 && e.getX() <= 420 )
+                    if( e.getX() >= 10 && e.getX() <= 145 )
                     {
                         System.out.println("Started Game");
                         popUp();
                         //start = true; // start game
-                    } else if( e.getX() >= 440 && e.getX() <= 840 )
+                    } else if( e.getX() >= 155 && e.getX() <= 290 )
                     {
                         System.out.println("Loading Game");
                         popUp();
                         //load = true; // load game
-                    } else if( e.getX() >= 860 && e.getX() <= 1260)
+                    } else if( e.getX() >= 300 && e.getX() <= 435)
                     {
                         //exit = true; // exit game
                         System.out.println("exiting");
@@ -90,10 +104,16 @@ public class MainMenu extends Canvas{
     
     public void paint(Graphics g)
     {
+        /*
         g.fillRect(20, 640, 400, 40);
         g.fillRect(440, 640, 400, 40);
         g.fillRect(860, 640, 400, 40);
+        */
         
+        g.drawImage(bg, 0,0,null);
+        g.drawImage(b1,10,20,null);
+        g.drawImage(b2,155,20,null);
+        g.drawImage(b3,300,20,null);
         /*g.setColor(Color.YELLOW);
         if(start){
         g.fillRect(20, 640, 400, 40);

@@ -31,7 +31,8 @@ public class Launch extends JFrame{
     
     public void setUpFrame()
     {
-        setSize(1280,720);
+        //setSize(1280,720);
+        setSize(445, 300);
         main = new MainMenu(this);
         add(main);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
