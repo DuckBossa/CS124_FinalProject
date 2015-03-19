@@ -1,6 +1,7 @@
 import java.awt.geom.Rectangle2D;
+import java.io.Serializable;
 import java.util.Random;
-public class Enemy extends Character implements CloneEnemy{
+public class Enemy extends Character implements CloneEnemy, Serializable{
 	public int fov;
 	public Rectangle2D fov_rect;
 	public State state;
@@ -15,7 +16,8 @@ public class Enemy extends Character implements CloneEnemy{
 		enemyDetect = false;
 		isRanged = false;
 	}
-
+        
+        public Enemy(){}
 	
 	public Rectangle2D attack(){
 		return hitbox;

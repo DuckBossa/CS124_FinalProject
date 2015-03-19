@@ -1,5 +1,6 @@
 import java.awt.geom.Rectangle2D;
-public abstract class Character{
+import java.io.Serializable;
+public abstract class Character implements Serializable{
 	public int atk;
 	public int def;
 	public int hp;
@@ -10,10 +11,16 @@ public abstract class Character{
 	public int face;
 	public int seq;
 	public int maxhp;
+        public int key;
 	public int charge;
 	public boolean attacking;
 	public Rectangle2D hitbox;
 
+        public Character()
+        {
+              //x = 20;
+        }
+        
 	public Character(int atk, int def, int vx, int vy, int x, int y,int w, int h, int lvl){
 		this.atk = atk;
 		this.def = def;
@@ -32,6 +39,7 @@ public abstract class Character{
 		seq = 1;
 		attacking = false;
 		hitbox = new Rectangle2D.Double(x,y,w,h);
+                
 	}
 
 	public enum Movement{

@@ -123,6 +123,7 @@ public class MainMenu extends Canvas{
                         } catch(Exception e)
                         {
                             IPs.setText("ERROR WITH I.P.");
+                            e.printStackTrace();
                         }
                         
                     }

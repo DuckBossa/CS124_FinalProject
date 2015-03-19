@@ -13,7 +13,8 @@ import java.awt.event.WindowListener;
  * @author J.Lo
  */
 public class Launch extends JFrame{
-    
+    public static final int PLAYER_IMG_WIDTH = 32; //
+    public static final int PLAYER_IMG_HEIGHT = 48;
     Canvas main, current;
     ServerInt serv;
     int ID;
@@ -36,50 +37,6 @@ public class Launch extends JFrame{
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setResizable(false);
         setVisible(true);
-        
-        addWindowListener(new WindowListener(){
-
-            @Override
-            public void windowOpened(WindowEvent e) {
-                //throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-            }
-
-            @Override
-            public void windowClosing(WindowEvent e) {
-                try{
-                    serv.logOut(ID);
-                } catch(Exception x)
-                {
-                    
-                }
-            }
-
-            @Override
-            public void windowClosed(WindowEvent e) {
-                //throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-            }
-
-            @Override
-            public void windowIconified(WindowEvent e) {
-                //throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-            }
-
-            @Override
-            public void windowDeiconified(WindowEvent e) {
-                //throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-            }
-
-            @Override
-            public void windowActivated(WindowEvent e) {
-                //throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-            }
-
-            @Override
-            public void windowDeactivated(WindowEvent e) {
-                //throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-            }
-        
-        });
     }
     
     public void setCanvas(Canvas a)
@@ -89,10 +46,20 @@ public class Launch extends JFrame{
         current = a;
     }
     
+    public void removeCanvas()
+    {
+        getContentPane().removeAll();
+        current = null;
+        revalidate();
+    }
+    
     public void setUpConnection(String ip) throws Exception
     {
             serv = (ServerInt) Naming.lookup("rmi://"+ip+"/GameServer");
-            ID = serv.logIn();
+            Player x = new Player(100,2,5,5,20,20,PLAYER_IMG_WIDTH,PLAYER_IMG_HEIGHT,1);
+            ID = serv.logIn(x);
+            new GameWindow(serv, ID);
+            dispose();
     }
     
 }

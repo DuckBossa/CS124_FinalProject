@@ -1,6 +1,6 @@
 //Item interface
 
-public interface Item {
+public interface Item{
 	public boolean isWeapon ();
 	public boolean isArmor ();
 	public boolean isAccessory ();

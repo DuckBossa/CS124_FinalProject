@@ -1,4 +1,7 @@
-public class UseItem implements Command{
+
+import java.io.Serializable;
+
+public class UseItem implements Command, Serializable{
 	Player p;
 
 	public UseItem(Player p){

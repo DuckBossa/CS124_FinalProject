@@ -16,7 +16,11 @@ class FlyweightFactory {
 			try {
 				BufferedImage img = ImageIO.read(new File(filename));
 				pool.put(filename, img);
-			} catch (IOException e) {}
+			} catch (IOException e) {
+                            System.out.println(filename);
+                            e.printStackTrace();
+                            System.exit(0);
+                        }
 		}
 		return pool.get(filename);
 	}

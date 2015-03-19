@@ -1,4 +1,7 @@
-public class MoveUp implements Command{
+
+import java.io.Serializable;
+
+public class MoveUp implements Command, Serializable{
 	Player p;
 
 	public MoveUp(Player p){

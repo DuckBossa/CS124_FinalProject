@@ -2,10 +2,10 @@ import java.util.Random;
 import java.util.ArrayList;
 public class EnemyFactory{
 	private Random random;
-	private Player p;
+	private ArrayList<Player> p;
 	private ArrayList<Arrow> arrow;
 	private Enemy e;
-	public EnemyFactory(Enemy e, Player p, ArrayList<Arrow> arrow){
+	public EnemyFactory(Enemy e, ArrayList<Player> p, ArrayList<Arrow> arrow){
 		random = new Random();
 		this.e = e;
 		this.p = p;

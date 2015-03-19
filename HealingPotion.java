@@ -1,7 +1,8 @@
 //concrete Accessory Item
 
+import java.io.Serializable;
 import java.util.*;
-public class HealingPotion implements Item {
+public class HealingPotion implements Item, Serializable {
 	public int uses = 3;
 	public boolean isWeapon () {
 		return false;

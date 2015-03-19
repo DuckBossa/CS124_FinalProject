@@ -1,6 +1,9 @@
+
+import java.io.Serializable;
+
 //Concrete Accessory Item
 
-public class StaminaBelt implements Item {
+public class StaminaBelt implements Item, Serializable {
 	public boolean isWeapon () {
 		return false;
 	}

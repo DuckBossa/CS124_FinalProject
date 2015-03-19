@@ -1,4 +1,12 @@
-public class MoveLeft implements Command{
+
+import java.io.Serializable;
+
+
+/**
+ *
+ * @author J.Lo
+ */
+public class MoveLeft implements Command , Serializable{
 	Player p;
 
 	public MoveLeft(Player p){

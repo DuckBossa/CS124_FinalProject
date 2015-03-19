@@ -1,5 +1,6 @@
 import java.awt.geom.Rectangle2D;
-public class Arrow{	
+import java.io.Serializable;
+public class Arrow implements Serializable{	
 	public int x,y,w,h;
 	public double vx,vy;
 	public int life;

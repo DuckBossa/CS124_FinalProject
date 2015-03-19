@@ -1,6 +1,9 @@
+
+import java.io.Serializable;
+
 //concrete Weapon Item
 
-public class Axe implements Item {
+public class Axe implements Item, Serializable {
 	public boolean isWeapon () {
 		return true;
 	}

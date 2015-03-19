@@ -1,10 +1,17 @@
 import java.awt.geom.Rectangle2D;
+import java.io.Serializable;
 import java.util.*;
-public class Player extends Character{
+public class Player extends Character implements Serializable{
 	public Item item;
 	public int gold;
 	public HashMap<Integer,Command> hm;
 	public HashMap<String,String> map;
+        
+        public Player()
+        {
+            x = 20;
+            System.out.println("SOSOS");
+        }
 	public Player(int atk, int def, int vx, int vy, int x, int y,int w, int h, int lvl){
 		super(atk,def,vx,vy,x,y,w,h,lvl);
 		item = null;

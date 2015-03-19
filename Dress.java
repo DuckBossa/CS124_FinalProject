@@ -1,6 +1,9 @@
+
+import java.io.Serializable;
+
 //concrete Armor Item
 
-public class Dress implements Item {
+public class Dress implements Item, Serializable {
 	public boolean isWeapon () {
 		return false;
 	}

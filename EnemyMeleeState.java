@@ -1,16 +1,23 @@
-public class EnemyMeleeState implements State{
+
+import java.io.Serializable;
+import java.util.ArrayList;
+
+public class EnemyMeleeState implements State, Serializable{
 	Enemy e; 
-	Player p;
+	ArrayList<Player> pl;
 	int currMove;
-	public EnemyMeleeState(Enemy e, Player p){
+	public EnemyMeleeState(Enemy e, ArrayList<Player> p){
 		this.e = e;
-		this.p = p;
+		this.pl = p;
 		currMove = e.random.nextInt()%4;
 	}
 
 	public void handle(){
-		if(see()){
-			if(collide()){
+                for(int i = 0; i < pl.size(); i++){
+                Player p = pl.get(i);
+		if(see(p)){
+            
+			if(collide(p)){
 				p.takeDamage(e.atk);
 			}
 			else{
@@ -43,22 +50,23 @@ public class EnemyMeleeState implements State{
 						}
 					}
 				}
+                                return;
 			}
-
-		}else{
+                }
 			if(e.roll()){
 				int ranMove = Math.abs(e.random.nextInt()%4);
 				currMove = ranMove;
 			}	
 			e.move(currMove);
-		}
+		
+                }
 	}
 
-	public boolean see(){
+	public boolean see(Player p){
 		return p.collide(e.fov_rect);
 	}
 
-	public boolean collide(){
+	public boolean collide(Player p){
 		return p.collide(e.hitbox);
 	}
 }
