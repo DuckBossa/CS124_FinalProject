@@ -1,8 +1,8 @@
-//concrete Armor Item
+//Concrete Armor Item
 
-public class Dress implements Item {
+public class Shield implements Item {
 	public String getName () {
-		return "Dress (Armor)";
+		return "Shield (Armor)";
 	}
 	public boolean isWeapon () {
 		return false;
@@ -14,10 +14,12 @@ public class Dress implements Item {
 		return false;
 	}
 	public void use (Character c) {
-		c.def += 10;
+		c.def += 3;
+		c.def += 3;
 	}
 	public void remove (Character c) {
-		c.def -= 10;
+		c.def -= 3;
+		c.def -= 3;
 	}
 	public void activate (Character c) {}
 }

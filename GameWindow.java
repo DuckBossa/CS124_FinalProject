@@ -51,6 +51,9 @@ public class GameWindow implements Runnable{
 	private int id; // server yung recharge
 	private FlyweightFactory ff;
         private ServerInt serv;
+	public Shop shop;
+	public Settings keyset;
+	public JLabel curItem, curLevel, curGold, curHP, curAttack, curDef;
 	public GameWindow(ServerInt x, int y)throws IOException{
                 serv = x;
                 id = y;
@@ -74,6 +77,10 @@ public class GameWindow implements Runnable{
 		//init();
 		//public Character(int atk, int def, int vx, int vy, int x, int y,int w, int h, int lvl){
 		mf = new MainFrame(WINDOW_WIDTH,WINDOW_HEIGHT,enemy,players,arrow,ff, id);
+                shop = new Shop(mf.gc.ff, serv.getMyPlayer(id));
+		keyset = new Settings(serv.getMyPlayer(id));
+		shop.setVisible(false);
+		keyset.setVisible(false);
                 Thread t = new Thread(this);
                 t.start();
 	}
@@ -180,6 +187,17 @@ public class GameWindow implements Runnable{
                         } catch(Exception e)
                         {}
 			render();
+                        try {
+                            curLevel.setText("Level: " + serv.getMyPlayer(id).lvl);
+                            curItem.setText("Item: <empty>");
+                            if (serv.getMyPlayer(id).item!=null)
+                                    curItem.setText("Item: " + serv.getMyPlayer(id).item.getName());
+                            curHP.setText("Health: " + serv.getMyPlayer(id).hp);
+                            curAttack.setText("Attack: " + serv.getMyPlayer(id).atk);
+                            curDef.setText("Defense: " + serv.getMyPlayer(id).def);
+                            curGold.setText("Gold: " + serv.getMyPlayer(id).gold);
+                        } catch (Exception e) {}
+			mf.revalidate();
 
 	}
 
@@ -208,8 +226,48 @@ public class GameWindow implements Runnable{
 			gc = new GameCanvas(enemy,player,arrow,ff);
 			gc.setFocusable(false);
 			setFocusable(true);
-			add(gc);
+			add(gc, BorderLayout.CENTER);
+
+			JPanel statusBar = new JPanel (new GridLayout(1,0));
+			JButton shopButton = new JButton("Shop");
+			shopButton.addActionListener(new ActionListener() {
+				public void actionPerformed(ActionEvent ae) {
+					shop.setVisible(true);
+				}
+			});
+			shopButton.setFocusable(false);
+
+			JButton setButton = new JButton ("Settings");
+			setButton.addActionListener(new ActionListener() {
+				public void actionPerformed(ActionEvent ae) {
+					keyset.setVisible(true);
+				}
+			});
+			setButton.setFocusable(false);
+                        
+                        try {
+                            curLevel = new JLabel ("Level: " + serv.getMyPlayer(id).lvl);
+                            curItem = new JLabel ("Item: <empty>");
+                            if (serv.getMyPlayer(id).item!=null)
+                                    curItem = new JLabel ("Item: " + serv.getMyPlayer(id).item.getName());
+                            curHP = new JLabel ("Health: " + serv.getMyPlayer(id).hp);
+                            curAttack = new JLabel ("Attack: " + serv.getMyPlayer(id).atk);
+                            curDef = new JLabel ("Defense: " + serv.getMyPlayer(id).def);
+                            curGold = new JLabel ("Gold: " + serv.getMyPlayer(id).gold);
+                        } catch (Exception e) {}
+
+			statusBar.add(shopButton);
+			statusBar.add(setButton);
+			statusBar.add(curGold);
+			statusBar.add(curLevel);
+			statusBar.add(curHP);
+			statusBar.add(curAttack);
+			statusBar.add(curDef);
+			statusBar.add(curItem);
+			add(statusBar, BorderLayout.SOUTH);
+
 			addKeyListener(new Keyboard());
+			setVisible(true);
                         ID = x;
                         addWindowListener(new WindowListener(){
 
@@ -272,18 +330,15 @@ public class GameWindow implements Runnable{
 			}
 			public void keyTyped(KeyEvent e){}
 			public void keyPressed(KeyEvent e){
-				/*if(player.hm.containsKey((int) e.getKeyChar())){
-					key = (int) e.getKeyChar();
-				}*/
                                 try{
-                                serv.doCommand(id, (int)e.getKeyChar());
+                                serv.doCommand(id, (int)e.getKeyChar(), 1);
                                 } catch(Exception except)
                                 {
                                 }
 			}
 			public void keyReleased(KeyEvent e){
                                 try{
-				serv.doCommand(id, (int)'.');
+				serv.doCommand(id, (int)e.getKeyChar(), 0);
                                 } catch(Exception except)
                                 {
                                 

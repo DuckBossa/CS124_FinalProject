@@ -1,4 +1,4 @@
-//window for shop
+//window for settings
 
 import javax.imageio.*;
 import java.util.*;
@@ -71,7 +71,7 @@ class OpenSetting implements ActionListener {
 		this.p = p;
 		this.s = s;
 	}
-	public void actionPerformed(ActionEvent ae) {
+	public void actionPerformed(ActionEvent ae) { 
 		String [] cur = new String [6];
 		cur[0] = s.text1.getText();
 		cur[1] = s.text2.getText();
@@ -93,9 +93,9 @@ class OpenSetting implements ActionListener {
 		}
 
 		for (int i=0; i<5; i++) {
-			String first = cur[i];
+			char first = cur[i].charAt(0);
 			for (int k=i+1; k<6; k++) {
-				if (first.equals(cur[k])) {
+				if (first==cur[k].charAt(0)) {
 					s.text1.setText(p.map.get("up"));
 					s.text2.setText(p.map.get("down"));
 					s.text3.setText(p.map.get("right"));
@@ -118,11 +118,16 @@ class OpenSetting implements ActionListener {
 		p.map.put("attack", cur[4]);
 		p.map.put("item", cur[5]);
 
+		p.hm.put((int)'.', new DoNothing());
 		p.hm.put((int)cur[0].charAt(0), new MoveUp(p));
 		p.hm.put((int)cur[1].charAt(0), new MoveDown(p));
 		p.hm.put((int)cur[2].charAt(0), new MoveRight(p));
 		p.hm.put((int)cur[3].charAt(0), new MoveLeft(p));
 		p.hm.put((int)cur[4].charAt(0), new Attack(p));
 		p.hm.put((int)cur[5].charAt(0), new UseItem(p));
+
+		System.out.println ("New keys (up, down, right, left, attack, item):");
+		System.out.println (cur[0] + " " + cur[1] + " " + cur[2] + " " + cur[3] + " " + cur[4] + " " + cur[5]);
+		
 	}
 }

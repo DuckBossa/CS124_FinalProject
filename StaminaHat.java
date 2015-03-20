@@ -1,23 +1,25 @@
-//concrete Armor Item
+//Concrete Accessory Item
 
-public class Dress implements Item {
+public class StaminaHat implements Item {
 	public String getName () {
-		return "Dress (Armor)";
+		return "Stamina Hat (Accessory)";
 	}
 	public boolean isWeapon () {
 		return false;
 	}
 	public boolean isArmor () {
-		return true;
-	}
-	public boolean isAccessory () {
 		return false;
 	}
+	public boolean isAccessory () {
+		return true;
+	}
 	public void use (Character c) {
-		c.def += 10;
+		c.vx += 2;
+		c.vy += 2;
 	}
 	public void remove (Character c) {
-		c.def -= 10;
+		c.vx -= 2;
+		c.vy -= 2;
 	}
 	public void activate (Character c) {}
 }

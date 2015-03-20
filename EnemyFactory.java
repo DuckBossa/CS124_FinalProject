@@ -24,7 +24,7 @@ public class EnemyFactory{
 		temp.fov = GameWindow.FOV_RANGED;
 		temp.fov_rect = e.makeCopyRect(e.fov_rect);
 		temp.hitbox = e.makeCopyRect(e.hitbox);
-		temp.setState(new EnemyRangedState(temp,p,arrow));
+		temp.setState(new EnemyRangedState(temp,arrow));
 		temp.isRanged = true;
 		temp.updateRectangle();
 		return temp;
@@ -40,7 +40,7 @@ public class EnemyFactory{
 		temp.fov_rect = e.makeCopyRect(e.fov_rect);
 		temp.fov = GameWindow.FOV_MELEE;
 		temp.hitbox = e.makeCopyRect(e.hitbox);
-		temp.setState(new EnemyMeleeState(temp,p));
+		temp.setState(new EnemyMeleeState(temp));
 		temp.isRanged = false;
 		temp.updateRectangle();
 		return temp;

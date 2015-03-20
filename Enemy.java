@@ -1,5 +1,6 @@
 import java.awt.geom.Rectangle2D;
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Random;
 public class Enemy extends Character implements CloneEnemy, Serializable{
 	public int fov;
@@ -40,8 +41,8 @@ public class Enemy extends Character implements CloneEnemy, Serializable{
 		return rect;
 	}
 
-	public void handle(){
-		state.handle();
+	public void handle(ArrayList<Player> pl){
+		state.handle(pl);
 	}
 
 	public void setState(State state){

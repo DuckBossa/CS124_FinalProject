@@ -239,8 +239,9 @@ public class Server extends UnicastRemoteObject implements ServerInt{
         keys.add(curID);
         appLog("A Client has connected to the server! ID assigned: "+curID);
         refreshData();
-        System.out.println(thisGuy.hitbox == null);
-        System.out.println(thisGuy.x+" "+thisGuy.y);
+        //System.out.println(thisGuy.hitbox == null);
+        //System.out.println(thisGuy.x+" "+thisGuy.y);
+        thisGuy.in = true;
         return curID++;
     }
     
@@ -249,7 +250,9 @@ public class Server extends UnicastRemoteObject implements ServerInt{
         keys.remove(((Integer) i));
         refreshData();
         appLog("Client#"+i+" has disconnected.");
-        return characters.remove(i);
+        Player temp = characters.remove(i);
+        temp.in = false;
+        return temp;
     }
     
    
@@ -272,9 +275,27 @@ public class Server extends UnicastRemoteObject implements ServerInt{
         return arrow;
     }
     
-    public void doCommand(int ID, int key) throws RemoteException{
+    public Player getMyPlayer(int ID) throws RemoteException{
+        return characters.get(ID);
+    }
+    
+    public void refreshPlayer(int ID, Player p) throws RemoteException{
+        characters.put(ID, p);
+    }
+    
+    public void doCommand(int ID, int key, int pressed) throws RemoteException{
         Player temp = characters.get(ID);
         appLog("Key was pressed by client#"+ID+" "+(char)key);
+        if (pressed==1) {
+            if(temp.hm.containsKey(key)){
+                temp.pressed.add((char) key +"");
+            }
+        }
+        else {
+            if (temp.pressed.contains((char)key+""))
+                temp.pressed.remove((char) key+"");
+        }
+        /*
         if(temp.hm.containsKey(key))
         {
             if(!temp.attacking)
@@ -283,7 +304,7 @@ public class Server extends UnicastRemoteObject implements ServerInt{
                 temp.execute(key);
             }
             temp.key = key;
-        }
+        }*/
         appLog(temp.x+" , "+temp.y);
     }
     
@@ -297,32 +318,38 @@ public class Server extends UnicastRemoteObject implements ServerInt{
 		} 
 	}
         // server
-	public void animate(){
+	public void animate() {
+            System.out.println(keys.size());
 		for(int i = 0; i < enemies.size(); i++){
 			Enemy e = enemies.get(i);
-			e.handle();
+                        try{
+			e.handle(getAllCharacters());
+                        } catch(RemoteException re){}
 			e.updateRectangle();
 		}
 		for(int i = 0; i < arrow.size(); i++){
 			Arrow a = arrow.get(i);
 			a.move();
 			if(a.motionLife()){
-                            for(int j = 0; i < characters.size(); i++){
-                                Player player = characters.get(i);
+                            for(int j = 0; j < characters.size(); j++){
+                                Player player = characters.get(j);
 				if(player.collide(a.hitbox)){
 					player.takeDamage(a.dmg);
-					arrow.remove(i--);
+					arrow.remove(i);
+                                        i--;
 				}
                             }
 			}
 			else{
-				arrow.remove(i--);
+				arrow.remove(i);
+                                i--;
 			}
 		}
 	}
     // game stuff
     
     	public void playerAnimate(){
+            
             for(int i = 0; i < keys.size(); i++){
                 
                 Player player = characters.get(keys.get(i));
@@ -346,7 +373,7 @@ public class Server extends UnicastRemoteObject implements ServerInt{
 			}
 		} else
                 {
-                    player.execute(player.key);
+                    player.execute();
                 }
             }
 	}
@@ -369,9 +396,9 @@ public class Server extends UnicastRemoteObject implements ServerInt{
 	
         // server
 	public void collide(){
-                for(int i = 0; i < characters.size(); i++)
+                for(int i = 0; i < keys.size(); i++)
                 {
-                    Player player = characters.get(i);
+                    Player player = characters.get(keys.get(i));
                     resolveWalls(player);
                 }
 		for(int i = 0; i < enemies.size(); i++){
@@ -399,8 +426,8 @@ public class Server extends UnicastRemoteObject implements ServerInt{
                 //this animates
                 animate();
                 playerAnimate();
+               collide();
                 addEnemies();
-                collide();
                 refreshData();
       
                 try{

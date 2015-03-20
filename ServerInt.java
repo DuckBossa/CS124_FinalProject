@@ -15,6 +15,8 @@ public interface ServerInt extends Remote{
     public Player logOut(int i) throws RemoteException;
     public ArrayList<Player> getAllCharacters() throws RemoteException;
     public ArrayList<Enemy> getAllEnemies() throws RemoteException;
-    public ArrayList<Arrow> getAllArrows() throws RemoteException;
-    public void doCommand(int i, int key) throws RemoteException;
+    public ArrayList<Arrow> getAllArrows() throws RemoteException; 
+    public Player getMyPlayer(int ID) throws RemoteException;
+    public void refreshPlayer(int ID, Player p) throws RemoteException;
+    public void doCommand(int i, int key, int pressed) throws RemoteException;
 }
