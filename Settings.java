@@ -25,6 +25,10 @@ public class Settings extends JFrame {
 		this.setLayout(new BorderLayout());
                 serv = x;
                 id = i;
+		try {
+			p = serv.getMyPlayer(id);
+		}
+		catch (Exception e) {}
 		JPanel panel = new JPanel(new GridLayout(6,2));
 		JLabel label1 = new JLabel ("Move Up");
 		JLabel label2 = new JLabel ("Move Down");
