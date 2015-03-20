@@ -1,6 +1,9 @@
 //concrete Armor Item
 
 public class Dress implements Item {
+	public String getName () {
+		return "Dress (Armor)";
+	}
 	public boolean isWeapon () {
 		return false;
 	}
