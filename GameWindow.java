@@ -34,7 +34,7 @@ public class GameWindow{
 
 	private ArrayList<Enemy> enemy;
 	private ArrayList<Arrow> arrow;
-	private Player player;
+	public Player player;
 	private String img_player;
 	private String img_enemy_melee;
 	private String img_enemy_ranged;
@@ -46,8 +46,12 @@ public class GameWindow{
 	private EnemyFactory ef;
 	private Random random;
 	private int recharge;
-	private FlyweightFactory ff;
+	public FlyweightFactory ff;
+	private ArrayList<String> pressed;
+	public Shop shop;
+	public Settings keyset;
 	public GameWindow()throws IOException{
+		pressed = new ArrayList<String>();
 		key = (int) '.';
 		random = new Random();
 		img_player = "img/player.png";
@@ -66,6 +70,10 @@ public class GameWindow{
 		init();
 		//public Character(int atk, int def, int vx, int vy, int x, int y,int w, int h, int lvl){
 		mf = new MainFrame(WINDOW_WIDTH,WINDOW_HEIGHT,enemy,player,arrow,ff);
+		shop = new Shop(mf.gc.ff, mf.gc.player);
+		keyset = new Settings(mf.gc.player);
+		shop.setVisible(false);
+		keyset.setVisible(false);
 	}
 
 	public void init(){
@@ -119,7 +127,18 @@ public class GameWindow{
 			}
 		}
 		else{
-			player.execute(key);						
+			if (pressed.isEmpty()) player.execute((int)'.');
+			else {
+				for (int i=0; i<pressed.size(); i++) {
+					char cur = pressed.get(i).charAt(0);
+					player.execute((int)cur);
+					if (cur==player.map.get("item").charAt(0)) {
+						pressed.remove(cur+"");
+						i--;
+					}
+				}
+			}
+			//player.execute(key);						
 		}
 	}
 
@@ -188,7 +207,7 @@ public class GameWindow{
 
 	class MainFrame extends JFrame{
 		GameCanvas gc;
-		public MainFrame(int w, int h, ArrayList<Enemy> enemy, Character player, ArrayList<Arrow> arrow,FlyweightFactory ff){
+		public MainFrame(int w, int h, ArrayList<Enemy> enemy, Player player, ArrayList<Arrow> arrow,FlyweightFactory ff){
 			setTitle("Final_Project");
 			setSize(w,h);
 			setResizable(false);
@@ -196,7 +215,40 @@ public class GameWindow{
 			gc = new GameCanvas(enemy,player,arrow,ff);
 			gc.setFocusable(false);
 			setFocusable(true);
-			add(gc);
+			setLayout(new BorderLayout());
+			add(gc, BorderLayout.CENTER);
+
+			JPanel statusBar = new JPanel (new GridLayout(1,0));
+			JButton shopButton = new JButton("Shop");
+			shopButton.addActionListener(new ActionListener() {
+				public void actionPerformed(ActionEvent ae) {
+					shop.setVisible(true);
+				}
+			});
+			shopButton.setFocusable(false);
+
+			JButton setButton = new JButton ("Settings");
+			setButton.addActionListener(new ActionListener() {
+				public void actionPerformed(ActionEvent ae) {
+					keyset.setVisible(true);
+				}
+			});
+			setButton.setFocusable(false);
+
+			JLabel curLevel = new JLabel ("Level: " + player.lvl);
+			//JLabel curItem = new JLabel ("Using: " + player.item.name);
+			JLabel curHP = new JLabel ("Health: " + player.hp);
+			JLabel curAttack = new JLabel ("Attack: " + player.atk);
+			JLabel curDef = new JLabel ("Defense: " + player.def);
+
+			statusBar.add(shopButton);
+			statusBar.add(setButton);
+			statusBar.add(curLevel);
+			statusBar.add(curHP);
+			statusBar.add(curAttack);
+			statusBar.add(curDef);
+			add(statusBar, BorderLayout.SOUTH);
+
 			addKeyListener(new Keyboard());
 			setVisible(true);
 		}
@@ -212,11 +264,14 @@ public class GameWindow{
 			public void keyTyped(KeyEvent e){}
 			public void keyPressed(KeyEvent e){
 				if(player.hm.containsKey((int) e.getKeyChar())){
-					key = (int) e.getKeyChar();
+					pressed.add(e.getKeyChar()+"");
+					//key = (int) e.getKeyChar();
 				}
 			}
 			public void keyReleased(KeyEvent e){
-				key = (int) '.';
+				if (pressed.contains(e.getKeyChar()+""))
+					pressed.remove(e.getKeyChar()+"");
+				//key = (int) '.';
 			}
 		}
 
@@ -226,8 +281,8 @@ public class GameWindow{
 		ArrayList<Enemy> enemy;
 		ArrayList<Arrow> arrow;
 		FlyweightFactory ff;
-		Character player;
-		public GameCanvas(ArrayList<Enemy> enemy, Character player, ArrayList<Arrow> arrow, FlyweightFactory ff){
+		Player player;
+		public GameCanvas(ArrayList<Enemy> enemy, Player player, ArrayList<Arrow> arrow, FlyweightFactory ff){
 			this.ff = ff;
 			this.player = player;
 			this.enemy = enemy;
