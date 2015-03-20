@@ -59,7 +59,7 @@ public class Settings extends JFrame {
 		panel.add(text6);
 
 		JButton button = new JButton ("Save Settings");
-		button.addActionListener(new OpenSetting(p, this, serv, id));
+		button.addActionListener(new OpenSetting( this, serv, id));
 
 		this.add(panel, BorderLayout.CENTER);
 		this.add(button, BorderLayout.SOUTH);
@@ -72,10 +72,9 @@ class OpenSetting implements ActionListener {
 	Settings s;
         ServerInt serv;
         int id;
-	public OpenSetting(Player p, Settings s, ServerInt serv, int id) {
+	public OpenSetting( Settings s, ServerInt serv, int id) {
                 this.serv = serv;
                 this.id = id;
-		this.p = p;
 		this.s = s;
 	}
 	public void actionPerformed(ActionEvent ae) { 
