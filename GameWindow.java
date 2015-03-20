@@ -34,7 +34,6 @@ public class GameWindow implements Runnable{
 	public static final int WINDOW_WIDTH = 959; //
 	public static final int WINDOW_HEIGHT = 623; //
 
-	private boolean playerAlive;
 
 	private ArrayList<Enemy> enemy;
 	private ArrayList<Arrow> arrow;
@@ -69,7 +68,6 @@ public class GameWindow implements Runnable{
 		img_attack = "img/player_attack.png";
 		img_bg = "img/map.png";
 		ff = new FlyweightFactory();
-		playerAlive = true;
 		recharge = 0;
                 try{
 		enemy = serv.getAllEnemies();
@@ -132,7 +130,7 @@ public class GameWindow implements Runnable{
 			try{
 				Thread.sleep( 1000/FPS );
 				loop();
-                                //System.out.println("CHUCHU");
+                               
 			}
 			catch(InterruptedException ie){
 				ie.printStackTrace();
@@ -343,7 +341,7 @@ public class GameWindow implements Runnable{
 		}
 
 		public void paint(Graphics g){
-                        System.out.println(players.size());
+                        
 			BufferStrategy bs = getBufferStrategy();
 			if(bs == null){
 				createBufferStrategy(2);
@@ -353,7 +351,7 @@ public class GameWindow implements Runnable{
 			g2.drawImage(ff.getImage(img_bg),0,0,null);
                         for(int i = 0; i < players.size(); i ++){
                             Player player = players.get(i);
-                            System.out.println("Player at "+player.x+" "+player.y);
+              
                             if(player.attacking){
                                     drawAttackFrame(ff.getImage(img_attack),g2,player.x - PLAYER_ATTACK_W/2 + player.w/2 ,player.y - PLAYER_ATTACK_H/2 + player.h/2 ,ATTACK_COL,PLAYER_ATTACK_W,PLAYER_ATTACK_H,player.seq);
                             };

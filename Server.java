@@ -133,7 +133,7 @@ public class Server extends UnicastRemoteObject implements ServerInt{
                             public void actionPerformed(ActionEvent ae)
                             {
                                 if(spawnRate < 70){
-                                    spawnRate+=2;
+                                    spawnRate++;
                                     refreshData();
                                 }
                             }
@@ -146,7 +146,7 @@ public class Server extends UnicastRemoteObject implements ServerInt{
                             public void actionPerformed(ActionEvent ae)
                             {
                                 if(spawnRate > 10){
-                                    spawnRate-=2;
+                                    spawnRate--;
                                     refreshData();
                                 }
                             }
@@ -166,8 +166,8 @@ public class Server extends UnicastRemoteObject implements ServerInt{
                             
                             public void actionPerformed(ActionEvent ae)
                             {
-                                if(maxNum < 20){
-                                    maxNum++;
+                                if(maxNum < 30){
+                                    maxNum+=2;
                                     refreshData();
                                 }
                             }
@@ -180,7 +180,7 @@ public class Server extends UnicastRemoteObject implements ServerInt{
                             public void actionPerformed(ActionEvent ae)
                             {
                                 if(maxNum > 10){
-                                maxNum--;
+                                maxNum-=2;
                                 refreshData();
                                 }
                             }
@@ -233,15 +233,12 @@ public class Server extends UnicastRemoteObject implements ServerInt{
     }
     
     public int logIn(Player thisGuy) throws RemoteException{
-        //characters.put(curID, thisGuy); 
         loggedIn++;
         
         characters.put( curID, thisGuy);
         keys.add(curID);
         appLog("A Client has connected to the server! ID assigned: "+curID);
         refreshData();
-        //System.out.println(thisGuy.hitbox == null);
-        //System.out.println(thisGuy.x+" "+thisGuy.y);
         thisGuy.in = true;
         return curID++;
     }
@@ -364,7 +361,7 @@ public class Server extends UnicastRemoteObject implements ServerInt{
 					Enemy temp = enemies.get(j);
 					if(temp.collide(player.attack())){
 						temp.takeDamage(player.atk);
-                                                System.out.println("I'm here "+ enemies.size());
+                                                System.out.println("I'm here "+ temp.hp);
 						if(!temp.isAlive()){
 							player.gainExp(temp.lvl);
 							player.gold += random.nextInt(temp.lvl) + 1;
@@ -398,7 +395,7 @@ public class Server extends UnicastRemoteObject implements ServerInt{
 		a.updateRectangle();
 	}
 	
-        // server
+   
 	public void collide(){
                 for(int i = 0; i < keys.size(); i++)
                 {
@@ -412,12 +409,13 @@ public class Server extends UnicastRemoteObject implements ServerInt{
         
         	public void addEnemies(){
 		if(enemies.size() < maxNum){
+                    if(Math.random()*100 < spawnRate){
 			if(--recharge <= 0){
 				recharge = 80;
 				enemies.add(ef.createMeleeEnemy());
 				enemies.add(ef.createRangedEnemy());
 			}
-
+                    }
 		}
 	}
 
@@ -427,7 +425,8 @@ public class Server extends UnicastRemoteObject implements ServerInt{
         if(characters.containsKey(ID)){
         characters.remove(ID);
         keys.remove((Integer) ID);
-        System.out.println("you're dead");
+        loggedIn--;
+        appLog("Client#"+ID+" is dead and has therefore been disconnected.");
     }
     }
     class Running implements Runnable{
@@ -436,7 +435,7 @@ public class Server extends UnicastRemoteObject implements ServerInt{
         public void run(){
             while(true)
             {
-                //this animates
+               
                 animate();
                 playerAnimate();
                 collide();
@@ -451,13 +450,5 @@ public class Server extends UnicastRemoteObject implements ServerInt{
         }
         
     }
-    /** server runs threads **/
-    /** some assumptions:
-     * Running will handle everything that does not need user input, i.e. enemies
-     * If needed animation chuchu for attacks that have lots of animations na walang kinalaman sa character
-     * i.e. ranged laser na malayo sa character na may charging animation chuchu
-     * IF necessary server will hold an attack array just say'n
-     * clarify pls
-     */
     
 }
