@@ -420,17 +420,26 @@ public class Server extends UnicastRemoteObject implements ServerInt{
 
 		}
 	}
-    
+
+
+    public void kill(int ID) throws RemoteException
+    {
+        if(characters.containsKey(ID)){
+        characters.remove(ID);
+        keys.remove((Integer) ID);
+        System.out.println("you're dead");
+    }
+    }
     class Running implements Runnable{
 
         @Override
-        public void run() {
+        public void run(){
             while(true)
             {
                 //this animates
                 animate();
                 playerAnimate();
-               collide();
+                collide();
                 addEnemies();
                 refreshData();
       
