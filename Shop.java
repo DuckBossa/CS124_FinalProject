@@ -12,8 +12,8 @@ import javax.swing.*;
 public class Shop extends JFrame
 {
 	public FlyweightFactory ff;
-	public Player player;
         ServerInt serv;
+		Player player;
         int id;
 	/* For testing purposes only
 	public static void main (String args []) {
@@ -21,12 +21,11 @@ public class Shop extends JFrame
 		Shop shop = new Shop(ff);
 	}
 	*/
-	public Shop (FlyweightFactory ff, Player p, ServerInt x, int i) {
+	public Shop (FlyweightFactory ff, ServerInt x, int i) {
 		this.setSize(500,500);
 		this.setDefaultCloseOperation(WindowConstants.HIDE_ON_CLOSE);
 		this.setLayout(new BorderLayout());
 		this.ff = ff;
-		this.player = p;
                 serv = x;
                 id = i;
 		JPanel items = new JPanel (new GridLayout(0,3));
@@ -37,8 +36,10 @@ public class Shop extends JFrame
 		b1.setContentAreaFilled(false);
 		b1.addActionListener(new ActionListener(){
 			public void actionPerformed(ActionEvent ae) {
-				player.setItem(new StaminaHat());
-                                try{
+								try{
+								player = serv.getMyPlayer(id);
+								player.setItem(new StaminaHat());
+                                
                                 serv.refreshPlayer(id, player);
                                 }catch(RemoteException e){}
                                 
@@ -50,10 +51,10 @@ public class Shop extends JFrame
 		b2.setContentAreaFilled(false);
 		b2.addActionListener(new ActionListener(){
 			public void actionPerformed(ActionEvent ae) {
-				player.setItem(new Axe());
-                                try{
+			try{
+								player = serv.getMyPlayer(id);
+								player.setItem(new Axe());
                                 serv.refreshPlayer(id, player);
-                                System.out.println (player.atk + " " + player.item.getName());
                                 }catch(RemoteException e){
                                     e.printStackTrace();
                                 }
@@ -65,8 +66,9 @@ public class Shop extends JFrame
 		b3.setContentAreaFilled(false);
 		b3.addActionListener(new ActionListener(){
 			public void actionPerformed(ActionEvent ae) {
-				player.setItem(new Dress());
-                                try{
+								try{
+								player = serv.getMyPlayer(id);
+								player.setItem(new Dress());
                                 serv.refreshPlayer(id, player);
                                 }catch(RemoteException e){}
 			}
@@ -77,8 +79,9 @@ public class Shop extends JFrame
 		b4.setContentAreaFilled(false);
 		b4.addActionListener(new ActionListener(){
 			public void actionPerformed(ActionEvent ae) {
-				player.setItem(new HealingPotion());
-                                try{
+								try{
+								player = serv.getMyPlayer(id);
+								player.setItem(new HealingPotion());
                                 serv.refreshPlayer(id, player);
                                 }catch(RemoteException e){}
 			}
@@ -90,8 +93,9 @@ public class Shop extends JFrame
 		b5.setContentAreaFilled(false);
 		b5.addActionListener(new ActionListener(){
 			public void actionPerformed(ActionEvent ae) {
-				player.setItem(new Sword());
-                                try{
+			try{
+								player = serv.getMyPlayer(id);
+								player.setItem(new Sword());
                                 serv.refreshPlayer(id, player);
                                 }catch(RemoteException e){}
 			}
@@ -102,8 +106,9 @@ public class Shop extends JFrame
 		b6.setContentAreaFilled(false);
 		b6.addActionListener(new ActionListener(){
 			public void actionPerformed(ActionEvent ae) {
-				player.setItem(new Shield());
-                                try{
+			try{
+								player = serv.getMyPlayer(id);
+								player.setItem(new Shield());
                                 serv.refreshPlayer(id, player);
                                 }catch(RemoteException e){}
 			}
