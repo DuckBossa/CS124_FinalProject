@@ -1,26 +1,26 @@
-
+//Concrete Accessory Item
 import java.io.Serializable;
 
-//concrete Weapon Item
-
-public class Axe implements Item, Serializable {
+public class StaminaHat implements Item, Serializable {
 	public String getName () {
-		return "Axe (Weapon)";
+		return "Stamina Hat (Accessory)";
 	}
 	public boolean isWeapon () {
-		return true;
+		return false;
 	}
 	public boolean isArmor () {
 		return false;
 	}
 	public boolean isAccessory () {
-		return false;
+		return true;
 	}
 	public void use (Character c) {
-		c.atk += 10;
+		c.vx += 2;
+		c.vy += 2;
 	}
 	public void remove (Character c) {
-		c.atk -= 10;
+		c.vx -= 2;
+		c.vy -= 2;
 	}
 	public void activate (Character c) {}
 }

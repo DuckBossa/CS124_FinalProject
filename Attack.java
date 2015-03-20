@@ -1,4 +1,12 @@
-public class Attack implements Command{
+
+import java.io.Serializable;
+
+
+/**
+ *
+ * @author J.Lo
+ */
+public class Attack implements Command ,Serializable{
 	Player p;
 	
 	public Attack(Player p){

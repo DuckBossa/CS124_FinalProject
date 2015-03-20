@@ -1,14 +1,25 @@
 import java.awt.geom.Rectangle2D;
+import java.io.Serializable;
 import java.util.*;
-public class Player extends Character{
+public class Player extends Character implements Serializable{
 	public Item item;
 	public int gold;
 	public HashMap<Integer,Command> hm;
 	public HashMap<String,String> map;
+        public boolean in;
+        public ArrayList<String> pressed;
+        
+        public Player()
+        {
+            pressed = new ArrayList<String>();
+            x = 20;
+            System.out.println("SOSOS");
+        }
 	public Player(int atk, int def, int vx, int vy, int x, int y,int w, int h, int lvl){
 		super(atk,def,vx,vy,x,y,w,h,lvl);
 		item = null;
 		gold = 0;
+                pressed = new ArrayList<String>();
 		hm = new HashMap<Integer,Command>();
 		map = new HashMap<String,String>();
 		hm.put((int)'.',new DoNothing());
@@ -54,11 +65,16 @@ public class Player extends Character{
 		}
 	}
 
-	public void execute(int command){
-		if(hm.containsKey(command)){
-			Command exec = hm.get(command);
-			exec.execute();
-		}
+	public void execute(){
+            for (int i=0; i<pressed.size(); i++) {
+                char cur = pressed.get(i).charAt(0);
+                Command toDo = hm.get((int) cur);
+                toDo.execute();
+                if (cur==map.get("item").charAt(0)) {
+                    pressed.remove(cur+"");
+                    i--;
+                }
+            }
 	}
 
 

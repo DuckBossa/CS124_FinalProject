@@ -5,8 +5,8 @@ import java.util.ArrayList;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
-import java.net.InetAddress;
 import java.util.HashMap;
+import java.util.Random;
 
 /*
  * To change this license header, choose License Headers in Project Properties.
@@ -20,8 +20,9 @@ import java.util.HashMap;
 public class Server extends UnicastRemoteObject implements ServerInt{
     int loggedIn = 0; // Number of people logged in
     int curID = 0; // ID of clients assigned always incrementing even if they quit
-    JFrame UI;
+    JFrame UI, x;
     JTextArea log;
+    JTextField IPs;
     JScrollPane scroll;
     JLabel head, head1, head2, spawn, max, IP, numEn, numLog;
     JPanel gen, manip, generalData, manipItself, spawnR, maxN;
@@ -29,15 +30,35 @@ public class Server extends UnicastRemoteObject implements ServerInt{
     int spawnRate = 50; // in percent
     int maxNum = 10; // in pieces
     HashMap<Integer, Player> characters; // different hashmaps for different maps (i.e. iba sa town)
+    ArrayList<Integer> keys;
     ArrayList<Enemy> enemies;
+    ArrayList<Arrow> arrow;
+    public static final int PLAYER_IMG_WIDTH = 32; //
+    public static final int PLAYER_IMG_HEIGHT = 48; //
+    	public static final int FPS = 60; 
+    
+    	public static final int START_HP = 20;
+        public static final int START_PlAYER_X = 20;
+	public static final int START_PLAYER_Y = 20;
+	public static final int FOV_MELEE = 150; 
+	public static final int FOV_RANGED = 300;
+       	private EnemyFactory ef; // server
+	private Random random; // server
+	private int recharge;
     
     public Server() throws RemoteException{
         //characters = new HashMap<Integer, Characters>();
         //enemies = new ArrayList<Characters>();
-        JFrame x = new JFrame("IP ADDRESS FOR REFERENCE");
+        enemies = new ArrayList<Enemy>();
+        arrow = new ArrayList<Arrow>();
+        characters = new HashMap<Integer, Player>();
+        keys = new ArrayList<Integer>();
+        random = new Random();
+        ef = new EnemyFactory(new Enemy(1,2,3,3,100,100,PLAYER_IMG_WIDTH,PLAYER_IMG_HEIGHT,1,0),getAllCharacters(),arrow);
+        x = new JFrame("IP ADDRESS FOR REFERENCE");
         x.setLayout(new BorderLayout());
         JPanel buttons = new JPanel();
-        JTextField IPs = new JTextField("(optional) Enter your I.P. Address for reference");
+        IPs = new JTextField("(optional) Enter your I.P. Address for reference");
         JButton ok = new JButton("OK");
         JButton ex = new JButton("CANCEL");
         ok.addActionListener(
@@ -86,10 +107,9 @@ public class Server extends UnicastRemoteObject implements ServerInt{
         gen = new JPanel();
             gen.setLayout(new GridLayout(4,1));
             head = new JLabel("General Data");
-            try{
+           
             IP = new JLabel("I.P. Address : "+ ip);
-            } catch(Exception e)
-            {}
+           
             numEn = new JLabel();
             numLog = new JLabel();
             gen.add(head);
@@ -113,7 +133,7 @@ public class Server extends UnicastRemoteObject implements ServerInt{
                             public void actionPerformed(ActionEvent ae)
                             {
                                 if(spawnRate < 70){
-                                    spawnRate++;
+                                    spawnRate+=2;
                                     refreshData();
                                 }
                             }
@@ -126,7 +146,7 @@ public class Server extends UnicastRemoteObject implements ServerInt{
                             public void actionPerformed(ActionEvent ae)
                             {
                                 if(spawnRate > 10){
-                                    spawnRate--;
+                                    spawnRate-=2;
                                     refreshData();
                                 }
                             }
@@ -137,7 +157,7 @@ public class Server extends UnicastRemoteObject implements ServerInt{
                 spawnR.add(spawn);
                 spawnR.add(spawnPlus);
                 spawnR.add(spawnMin);
-            maxN = new JPanel();
+                maxN = new JPanel();
                 maxN.setLayout(new GridLayout(1,3));
                 maxPlus = new JButton("+ Max Monsters");
                 maxMin = new JButton("- Max Monsters");
@@ -187,6 +207,7 @@ public class Server extends UnicastRemoteObject implements ServerInt{
         
         try{
             Naming.rebind("GameServer", this);
+            System.out.println("bound");
         }catch (Exception e){
             System.out.println("error");
             System.exit(0);
@@ -199,7 +220,7 @@ public class Server extends UnicastRemoteObject implements ServerInt{
     
     public void refreshData(){
         numLog.setText("Number of Clients : "+ loggedIn); 
-        numEn.setText("Number of Enemies : "+ /*enemies.size()*/ 10);
+        numEn.setText("Number of Enemies : "+ enemies.size());
         
         
         max.setText("Max Monsters : "+maxNum);
@@ -211,43 +232,208 @@ public class Server extends UnicastRemoteObject implements ServerInt{
         log.setText(log.getText()+"\n"+text);
     }
     
-    
-    
-    public int logIn(/*Character thisGuy*/) throws RemoteException{
+    public int logIn(Player thisGuy) throws RemoteException{
         //characters.put(curID, thisGuy); 
         loggedIn++;
+        
+        characters.put( curID, thisGuy);
+        keys.add(curID);
         appLog("A Client has connected to the server! ID assigned: "+curID);
         refreshData();
+        //System.out.println(thisGuy.hitbox == null);
+        //System.out.println(thisGuy.x+" "+thisGuy.y);
+        thisGuy.in = true;
         return curID++;
     }
     
-    public void logOut(int i) throws RemoteException{
+    public Player logOut(int i) throws RemoteException{
         loggedIn--;
+        keys.remove(((Integer) i));
         refreshData();
         appLog("Client#"+i+" has disconnected.");
-        //characters.remove(i);
+        Player temp = characters.remove(i);
+        temp.in = false;
+        return temp;
     }
     
    
-    public ArrayList<Player> getAllCharacters(){
+    public ArrayList<Player> getAllCharacters() throws RemoteException{
         // get All thigns in HashMap thats a Character or store keys?
         // iffy with this implementaion VV because I'm not sure what to think just yet until test is done
-        return (ArrayList<Player>)characters.values();
+        ArrayList<Player> pls = new ArrayList<Player>();
+        for(int i = 0; i < keys.size(); i++)
+        {
+            pls.add(characters.get(keys.get(i)));
+        }
+        return pls;
     } 
     
-    public ArrayList<Enemy> getAllEnemies(){
+    public ArrayList<Enemy> getAllEnemies() throws RemoteException{
         return enemies;
     }
+    
+    public ArrayList<Arrow> getAllArrows() throws RemoteException{
+        return arrow;
+    }
+    
+    public Player getMyPlayer(int ID) throws RemoteException{
+        return characters.get(ID);
+    }
+    
+    public void refreshPlayer(int ID, Player p) throws RemoteException{
+        characters.put(ID, p);
+        System.out.println (p.atk + " " + p.item.getName());
+    }
+    
+    public void doCommand(int ID, int key, int pressed) throws RemoteException{
+        Player temp = characters.get(ID);
+        appLog("Key was pressed by client#"+ID+" "+(char)key);
+        if (pressed==1) {
+            if(temp.hm.containsKey(key)){
+                temp.pressed.add((char) key +"");
+            }
+        }
+        else {
+            if (temp.pressed.contains((char)key+""))
+                temp.pressed.remove((char) key+"");
+        }
+        /*
+        if(temp.hm.containsKey(key))
+        {
+            if(!temp.attacking)
+            {
+                
+                temp.execute(key);
+            }
+            temp.key = key;
+        }*/
+        appLog(temp.x+" , "+temp.y);
+    }
+    
+    
+    public void init(){
+		for(int i = 1; i <= maxNum/2; i++){
+			enemies.add(ef.createMeleeEnemy());
+		}
+		for(int i = 1; i <= maxNum/2; i++){
+			enemies.add(ef.createRangedEnemy());
+		} 
+	}
+        // server
+	public void animate() {
+            //System.out.println(keys.size());
+		for(int i = 0; i < enemies.size(); i++){
+			Enemy e = enemies.get(i);
+                        try{
+			e.handle(getAllCharacters());
+                        } catch(RemoteException re){}
+			e.updateRectangle();
+		}
+		for(int i = 0; i < arrow.size(); i++){
+			Arrow a = arrow.get(i);
+			a.move();
+			if(a.motionLife()){
+                            for(int j = 0; j < characters.size(); j++){
+                                Player player = characters.get(j);
+				if(player.collide(a.hitbox)){
+					player.takeDamage(a.dmg);
+					arrow.remove(i);
+                                        i--;
+				}
+                            }
+			}
+			else{
+				arrow.remove(i);
+                                i--;
+			}
+		}
+	}
+    // game stuff
+    
+    	public void playerAnimate(){
+            
+            for(int i = 0; i < keys.size(); i++){
+                
+                Player player = characters.get(keys.get(i));
+		if(player.attacking){
+			player.move(Player.Movement.ATTACK.getCode());
+			if(player.seq == 14){
+				for(int j = 0 ; j < enemies.size(); j++){
+					Enemy temp = enemies.get(j);
+					if(temp.collide(player.attack())){
+						temp.takeDamage(player.atk);
+                                                System.out.println("I'm here "+ enemies.size());
+						if(!temp.isAlive()){
+							player.gainExp(temp.lvl);
+							player.gold += random.nextInt(temp.lvl) + 1;
+							enemies.remove(j);
+                                                     
+							j--;
+						}
+					}
+				}
+			}
+		} else
+                {
+                    player.execute();
+                }
+            }
+	}
+        
+        	public void resolveWalls(Character a){
+		if(a.x < 0){
+			a.x = 0;
+		}
+		if(a.y < 0){
+			a.y = 0;
+		}
+		if(a.x + PLAYER_IMG_WIDTH > 959){
+			a.x = 959 - PLAYER_IMG_WIDTH; 
+		}
+		if(a.y + PLAYER_IMG_HEIGHT > 623){
+			a.y = 623 - PLAYER_IMG_HEIGHT;
+		}
+		a.updateRectangle();
+	}
+	
+        // server
+	public void collide(){
+                for(int i = 0; i < keys.size(); i++)
+                {
+                    Player player = characters.get(keys.get(i));
+                    resolveWalls(player);
+                }
+		for(int i = 0; i < enemies.size(); i++){
+			resolveWalls(enemies.get(i));
+		}
+	}
+        
+        	public void addEnemies(){
+		if(enemies.size() < maxNum){
+			if(--recharge <= 0){
+				recharge = 80;
+				enemies.add(ef.createMeleeEnemy());
+				enemies.add(ef.createRangedEnemy());
+			}
 
+		}
+	}
+    
     class Running implements Runnable{
 
         @Override
         public void run() {
             while(true)
             {
-                //System.out.println("chuchu");
+                //this animates
+                animate();
+                playerAnimate();
+               collide();
+                addEnemies();
+                refreshData();
+      
                 try{
-                    Thread.sleep(100);
+                    Thread.sleep(1000/FPS);
                 }catch(Exception e)
                 {}
             }

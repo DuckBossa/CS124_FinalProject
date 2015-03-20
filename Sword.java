@@ -1,11 +1,9 @@
-
+//Concrete Weapon Item
 import java.io.Serializable;
 
-//concrete Weapon Item
-
-public class Axe implements Item, Serializable {
+public class Sword implements Item, Serializable {
 	public String getName () {
-		return "Axe (Weapon)";
+		return "Sword (Weapon)";
 	}
 	public boolean isWeapon () {
 		return true;
@@ -17,10 +15,12 @@ public class Axe implements Item, Serializable {
 		return false;
 	}
 	public void use (Character c) {
-		c.atk += 10;
+		c.atk += 3;
+		c.atk += 3;
 	}
 	public void remove (Character c) {
-		c.atk -= 10;
+		c.atk -= 3;
+		c.atk -= 3;
 	}
 	public void activate (Character c) {}
 }
