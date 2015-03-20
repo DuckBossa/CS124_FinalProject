@@ -77,8 +77,8 @@ public class GameWindow implements Runnable{
 		//init();
 		//public Character(int atk, int def, int vx, int vy, int x, int y,int w, int h, int lvl){
 		mf = new MainFrame(WINDOW_WIDTH,WINDOW_HEIGHT,enemy,players,arrow,ff, id);
-                shop = new Shop(mf.gc.ff, serv.getMyPlayer(id), serv, id);
-		keyset = new Settings(serv.getMyPlayer(id), serv, id);
+                shop = new Shop(mf.gc.ff, serv, id);
+		keyset = new Settings(serv, id);
 		shop.setVisible(false);
 		keyset.setVisible(false);
                 Thread t = new Thread(this);
