@@ -3,6 +3,7 @@ import java.awt.*;
 import java.awt.event.WindowEvent;
 import java.rmi.*;
 import java.awt.event.WindowListener;
+import java.io.*;
 /*
  * To change this license header, choose License Headers in Project Properties.
  * To change this template file, choose Tools | Templates
@@ -54,12 +55,26 @@ public class Launch extends JFrame{
         revalidate();
     }
     
-    public void setUpConnection(String ip) throws Exception
+    public void setUpConnection(String ip, boolean load) throws Exception
     {
-            serv = (ServerInt) Naming.lookup("rmi://"+ip+"/GameServer");
-            Player x = new Player(100,2,5,5,20,20,PLAYER_IMG_WIDTH,PLAYER_IMG_HEIGHT,1);
+			serv = (ServerInt) Naming.lookup("rmi://"+ip+"/GameServer");
+			CharacterMemento cm = null;
+			Player x = new Player(100,2,5,5,20,20,PLAYER_IMG_WIDTH,PLAYER_IMG_HEIGHT,1);
+			if(load){
+				try{
+					FileInputStream fin = new FileInputStream("savedgames.out");
+					ObjectInputStream ois = new ObjectInputStream(fin);
+					cm = (CharacterMemento) ois.readObject();
+					ois.close();
+					cm.getState(x);
+					System.out.println("got a saved game");
+				}catch(Exception ex){
+					load = false;
+				} 
+			} 
             ID = serv.logIn(x);
-            new GameWindow(serv, ID);
+            GameWindow gw = new GameWindow(serv, ID);
+			if (load) gw.savedGame = cm;
             dispose();
     }
     
