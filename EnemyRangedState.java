@@ -30,7 +30,7 @@ public class EnemyRangedState implements State, Serializable{
                 }
             }
             
-            if(target != null){
+            if(target != null && target.in &&target.isAlive()){
                 if(see(target)){
                     if(recharge <= 0){
                         recharge = 40;
