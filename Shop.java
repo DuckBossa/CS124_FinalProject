@@ -8,58 +8,62 @@ import java.awt.*;
 import java.awt.event.*;
 import javax.swing.*;
 
-public class Shop extends JFrame {
+public class Shop extends JFrame
+{
 	public FlyweightFactory ff;
+	public Player player;
 	/* For testing purposes only
 	public static void main (String args []) {
 		FlyweightFactory ff = new FlyweightFactory();
 		Shop shop = new Shop(ff);
 	}
 	*/
-	public Shop (FlyweightFactory ff) {
+	public Shop (FlyweightFactory ff, Player p) {
 		this.setSize(500,500);
 		this.setDefaultCloseOperation(WindowConstants.HIDE_ON_CLOSE);
 		this.setLayout(new GridLayout(0,3));
 		this.ff = ff;
+		this.player = p;
 
 		//http://stackoverflow.com/questions/4898584/java-using-an-image-as-a-button
-		JButton b1 = new JButton(new ImageIcon(ff.getImage("test1.jpg")));
+		JButton b1 = new JButton(new ImageIcon(ff.getImage("img/arrow.png")));
 		b1.setBorder(BorderFactory.createEmptyBorder());
 		b1.setContentAreaFilled(false);
 		b1.addActionListener(new ActionListener(){
 			public void actionPerformed(ActionEvent ae) {
-				System.out.println("Accessory 1");
+				player.setItem(new StaminaBelt());
 			}
 		});
 
-		JButton b2 = new JButton(new ImageIcon(ff.getImage("test2.jpg")));
+		JButton b2 = new JButton(new ImageIcon(ff.getImage("img/arrow.png")));
 		b2.setBorder(BorderFactory.createEmptyBorder());
 		b2.setContentAreaFilled(false);
 		b2.addActionListener(new ActionListener(){
 			public void actionPerformed(ActionEvent ae) {
-				System.out.println("Weapon 1");
+				player.setItem(new Axe());
 			}
 		});
 
-		JButton b3 = new JButton(new ImageIcon(ff.getImage("test3.jpg")));
+		JButton b3 = new JButton(new ImageIcon(ff.getImage("img/arrow.png")));
 		b3.setBorder(BorderFactory.createEmptyBorder());
 		b3.setContentAreaFilled(false);
 		b3.addActionListener(new ActionListener(){
 			public void actionPerformed(ActionEvent ae) {
-				System.out.println("Armor 1");
+				player.setItem(new HealingPotion());
 			}
 		});
 
-		JButton b4 = new JButton(new ImageIcon(ff.getImage("test4.jpg")));
+		JButton b4 = new JButton(new ImageIcon(ff.getImage("img/arrow.png")));
 		b4.setBorder(BorderFactory.createEmptyBorder());
 		b4.setContentAreaFilled(false);
 		b4.addActionListener(new ActionListener(){
 			public void actionPerformed(ActionEvent ae) {
-				System.out.println("Accessory 2");
+				player.setItem(new Dress());
 			}
 		});
 
-		JButton b5 = new JButton(new ImageIcon(ff.getImage("test5.jpg")));
+		/*
+		JButton b5 = new JButton(new ImageIcon(ff.getImage("img/arrow.png")));
 		b5.setBorder(BorderFactory.createEmptyBorder());
 		b5.setContentAreaFilled(false);
 		b5.addActionListener(new ActionListener(){
@@ -68,7 +72,7 @@ public class Shop extends JFrame {
 			}
 		});
 
-		JButton b6 = new JButton(new ImageIcon(ff.getImage("test6.jpg")));
+		JButton b6 = new JButton(new ImageIcon(ff.getImage("img/arrow.png")));
 		b6.setBorder(BorderFactory.createEmptyBorder());
 		b6.setContentAreaFilled(false);
 		b6.addActionListener(new ActionListener(){
@@ -76,13 +80,14 @@ public class Shop extends JFrame {
 				System.out.println("Armor 2");
 			}
 		});
+		*/
 
 		this.add(b1);
 		this.add(b2);
 		this.add(b3);
 		this.add(b4);
-		this.add(b5);
-		this.add(b6);
+		//this.add(b5);
+		//this.add(b6);
 
 
 		this.setVisible(true);
