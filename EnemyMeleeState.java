@@ -24,7 +24,7 @@ public class EnemyMeleeState implements State, Serializable{
             }
             
             
-            if(target != null && target.in == true){
+            if(target != null && target.in && target.isAlive()){
                 //System.out.println(target.x+ " "+ target.y);
                 if(see(target)){
                     if(collide(target)){
