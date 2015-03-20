@@ -87,119 +87,42 @@ public class GameWindow implements Runnable{
                 Thread t = new Thread(this);
                 t.start();
 	}
-        // server
-        /*
-	public void init(){
-		for(int i = 1; i <= NUM_ENEMY_MELEE; i++){
-			enemy.add(ef.createMeleeEnemy());
-		}
-		for(int i = 1; i <= NUM_ENEM_RANGED; i++){
-			enemy.add(ef.createRangedEnemy());
-		} 
-	}
-        // server
-	public void animate(){
-		for(int i = 0; i < enemy.size(); i++){
-			Enemy e = enemy.get(i);
-			e.handle();
-			e.updateRectangle();
-		}
-		for(int i = 0; i < arrow.size(); i++){
-			Arrow a = arrow.get(i);
-			a.move();
-			if(a.motionLife()){
-				if(player.collide(a.hitbox)){
-					player.takeDamage(a.dmg);
-					arrow.remove(i--);
-				}
-			}
-			else{
-				arrow.remove(i--);
-			}
-		}
-	}*/
-
-
-        /*/server
-	public void playerAnimate(){
-            for(int i)
-		if(player.attacking){
-			player.move(Player.Movement.ATTACK.getCode());
-			if(player.seq == 14){
-				for(int i = 0 ; i < enemy.size(); i++){
-					Enemy temp = enemy.get(i);
-					if(temp.collide(player.attack())){
-						temp.takeDamage(player.atk);
-						if(!temp.isAlive()){
-							player.gainExp(temp.lvl);
-							player.gold += random.nextInt(temp.lvl) + 1;
-							enemy.remove(i);
-							i--;
-						}
-					}
-				}
-			}
-		}
-		else{
-			player.execute(key);						
-		}
-	}*/
-            /*
-        //server
-	public void resolveWalls(Character a){
-		if(a.x < 0){
-			a.x = 0;
-		}
-		if(a.y < 0){
-			a.y = 0;
-		}
-		if(a.x + PLAYER_IMG_WIDTH > mf.gc.getWidth()){
-			a.x = mf.gc.getWidth() - PLAYER_IMG_WIDTH; 
-		}
-		if(a.y + PLAYER_IMG_HEIGHT > mf.gc.getHeight()){
-			a.y = mf.gc.getHeight() - PLAYER_IMG_HEIGHT;
-		}
-		a.updateRectangle();
-	}
-	
-        // server
-	public void collide(){
-		resolveWalls(player);
-		for(int i = 0; i < enemy.size(); i++){
-			resolveWalls(enemy.get(i));
-		}
-	}
-*/
+ 
 	public void render(){
 		mf.update();
 	}
 
-
-
 // thread until run
 	public void loop(){
-			//addEnemies();
-			//playerAnimate();
-			//animate();
-			//collide();
+						Player temp;
                         try{
+                        temp = serv.getMyPlayer(id);
                         players = serv.getAllCharacters();
                         enemy = serv.getAllEnemies();
                         arrow = serv.getAllArrows();
                         mf.passUpdates(enemy, arrow, players);
+                         curLevel.setText("Level: " + temp.lvl);
+                            curItem.setText("Item: <empty>");
+                            if (serv.getMyPlayer(id).item!=null)
+                                    curItem.setText("Item: " + temp.item.getName());
+                            curHP.setText("Health: " + temp.hp);
+                            curAttack.setText("Attack: " + temp.atk);
+                            curDef.setText("Defense: " + temp.def);
+                            curGold.setText("Gold: " + temp.gold);
+                        if(!temp.isAlive()){
+                        	serv.kill(id);
+                        	mf.dispose();
+                        	JFrame x = new JFrame();
+                        	x.setSize(50,50);
+                        	x.add(new JLabel("You're dead"));
+                        	x.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+                        	x.setVisible(true);
+
+                        }
                         } catch(Exception e)
                         {}
 			render();
-                        try {
-                            curLevel.setText("Level: " + serv.getMyPlayer(id).lvl);
-                            curItem.setText("Item: <empty>");
-                            if (serv.getMyPlayer(id).item!=null)
-                                    curItem.setText("Item: " + serv.getMyPlayer(id).item.getName());
-                            curHP.setText("Health: " + serv.getMyPlayer(id).hp);
-                            curAttack.setText("Attack: " + serv.getMyPlayer(id).atk);
-                            curDef.setText("Defense: " + serv.getMyPlayer(id).def);
-                            curGold.setText("Gold: " + serv.getMyPlayer(id).gold);
-                        } catch (Exception e) {}
+                          
 			mf.revalidate();
 
 	}
@@ -291,12 +214,15 @@ public class GameWindow implements Runnable{
                         @Override
                         public void windowClosing(WindowEvent e) {
                             try{
-									savedGame = serv.logOut(ID).createMemento();
+									Player temp = serv.logOut(ID);
+									if(temp.isAlive()){
+									savedGame = temp.createMemento();
 									FileOutputStream fout = new FileOutputStream("savedgames.out");
 									ObjectOutputStream oos = new ObjectOutputStream(fout);   
 									oos.writeObject(savedGame);
 									oos.close();
 									System.out.println("saved game");
+									}
 								} catch (Exception ex) {}
 													}
                       
@@ -465,9 +391,4 @@ public class GameWindow implements Runnable{
 
 	}
 	
-	public void CLosing () {
-	}
-
-
-
 }
