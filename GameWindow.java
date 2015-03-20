@@ -4,6 +4,7 @@ import java.awt.event.*;
 import java.io.*;
 import javax.swing.*;
 import javax.imageio.ImageIO;
+
 import java.awt.image.BufferStrategy;
 public class GameWindow implements Runnable{
 	public static final int START_HP = 20;
@@ -45,6 +46,7 @@ public class GameWindow implements Runnable{
 	private String img_attack;
 	private String img_bg;
 	private MainFrame mf;
+	public CharacterMemento savedGame;
 	//private int key;
 	//private EnemyFactory ef; // server
 	//private Random random; // server
@@ -55,6 +57,7 @@ public class GameWindow implements Runnable{
 	public Settings keyset;
 	public JLabel curItem, curLevel, curGold, curHP, curAttack, curDef;
 	public GameWindow(ServerInt x, int y)throws IOException{
+		savedGame = null;
                 serv = x;
                 id = y;
 		//key = (int) '.';
@@ -255,6 +258,14 @@ public class GameWindow implements Runnable{
                             curDef = new JLabel ("Defense: " + serv.getMyPlayer(id).def);
                             curGold = new JLabel ("Gold: " + serv.getMyPlayer(id).gold);
                         } catch (Exception e) {}
+						
+			JButton saveButton = new JButton ("Save");
+			saveButton.addActionListener(new ActionListener() {
+				public void actionPerformed(ActionEvent ae) {
+					try{savedGame = serv.getMyPlayer(id).createMemento();}catch(Exception e){}
+				}
+			});
+			saveButton.setFocusable(false);
 
 			statusBar.add(shopButton);
 			statusBar.add(setButton);
@@ -279,12 +290,16 @@ public class GameWindow implements Runnable{
                         @Override
                         public void windowClosing(WindowEvent e) {
                             try{
-                                serv.logOut(ID);
-                            } catch(Exception x)
-                            {
-
-                            }
-                        }
+									savedGame = serv.logOut(ID).createMemento();
+									FileOutputStream fout = new FileOutputStream("savedgames.out");
+									ObjectOutputStream oos = new ObjectOutputStream(fout);   
+									oos.writeObject(savedGame);
+									oos.close();
+									System.out.println("saved game");
+								} catch (Exception ex) {}
+													}
+                      
+                        
 
                         @Override
                         public void windowClosed(WindowEvent e) {
@@ -447,6 +462,9 @@ public class GameWindow implements Runnable{
 			bs.show();			
 		}
 
+	}
+	
+	public void CLosing () {
 	}
 
 
