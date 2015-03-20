@@ -6,22 +6,26 @@ import java.io.*;
 import java.awt.image.*;
 import java.awt.*;
 import java.awt.event.*;
+import java.rmi.RemoteException;
 import javax.swing.*;
 
 public class Settings extends JFrame {
 	Player p;
 	JTextField text1, text2, text3, text4, text5, text6;
+        ServerInt serv;
+        int id;
 	/* For testing purposes only
 	public static void main (String args []) {
 		Settings userSettings = new Settings();
 	}
 	*/
-	public Settings (Player p) {
+	public Settings (Player p, ServerInt x, int i) {
 		this.p = p;
 		this.setSize(200,300);
 		this.setDefaultCloseOperation(WindowConstants.HIDE_ON_CLOSE);
 		this.setLayout(new BorderLayout());
-
+                serv = x;
+                id = i;
 		JPanel panel = new JPanel(new GridLayout(6,2));
 		JLabel label1 = new JLabel ("Move Up");
 		JLabel label2 = new JLabel ("Move Down");
@@ -56,7 +60,7 @@ public class Settings extends JFrame {
 		panel.add(text6);
 
 		JButton button = new JButton ("Save Settings");
-		button.addActionListener(new OpenSetting(p, this));
+		button.addActionListener(new OpenSetting(p, this, serv, id));
 
 		this.add(panel, BorderLayout.CENTER);
 		this.add(button, BorderLayout.SOUTH);
@@ -67,7 +71,11 @@ public class Settings extends JFrame {
 class OpenSetting implements ActionListener {
 	Player p;
 	Settings s;
-	public OpenSetting(Player p, Settings s) {
+        ServerInt serv;
+        int id;
+	public OpenSetting(Player p, Settings s, ServerInt serv, int id) {
+                this.serv = serv;
+                this.id = id;
 		this.p = p;
 		this.s = s;
 	}
@@ -128,6 +136,8 @@ class OpenSetting implements ActionListener {
 
 		System.out.println ("New keys (up, down, right, left, attack, item):");
 		System.out.println (cur[0] + " " + cur[1] + " " + cur[2] + " " + cur[3] + " " + cur[4] + " " + cur[5]);
-		
+		try{
+                    serv.refreshPlayer(id, p);
+                }catch(RemoteException e){}
 	}
 }

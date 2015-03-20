@@ -1,6 +1,7 @@
 //Concrete Weapon Item
+import java.io.Serializable;
 
-public class Sword implements Item {
+public class Sword implements Item, Serializable {
 	public String getName () {
 		return "Sword (Weapon)";
 	}

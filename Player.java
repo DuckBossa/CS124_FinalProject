@@ -68,7 +68,8 @@ public class Player extends Character implements Serializable{
 	public void execute(){
             for (int i=0; i<pressed.size(); i++) {
                 char cur = pressed.get(i).charAt(0);
-                this.move((int)cur);
+                Command toDo = hm.get((int) cur);
+                toDo.execute();
                 if (cur==map.get("item").charAt(0)) {
                     pressed.remove(cur+"");
                     i--;

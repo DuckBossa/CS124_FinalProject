@@ -281,6 +281,7 @@ public class Server extends UnicastRemoteObject implements ServerInt{
     
     public void refreshPlayer(int ID, Player p) throws RemoteException{
         characters.put(ID, p);
+        System.out.println (p.atk + " " + p.item.getName());
     }
     
     public void doCommand(int ID, int key, int pressed) throws RemoteException{
@@ -319,7 +320,7 @@ public class Server extends UnicastRemoteObject implements ServerInt{
 	}
         // server
 	public void animate() {
-            System.out.println(keys.size());
+            //System.out.println(keys.size());
 		for(int i = 0; i < enemies.size(); i++){
 			Enemy e = enemies.get(i);
                         try{

@@ -1,6 +1,8 @@
 //concrete Armor Item
 
-public class Dress implements Item {
+import java.io.Serializable;
+
+public class Dress implements Item, Serializable {
 	public String getName () {
 		return "Dress (Armor)";
 	}

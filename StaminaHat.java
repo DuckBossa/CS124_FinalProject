@@ -1,6 +1,7 @@
 //Concrete Accessory Item
+import java.io.Serializable;
 
-public class StaminaHat implements Item {
+public class StaminaHat implements Item, Serializable {
 	public String getName () {
 		return "Stamina Hat (Accessory)";
 	}

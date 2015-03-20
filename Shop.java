@@ -6,25 +6,29 @@ import java.io.*;
 import java.awt.image.*;
 import java.awt.*;
 import java.awt.event.*;
+import java.rmi.RemoteException;
 import javax.swing.*;
 
 public class Shop extends JFrame
 {
 	public FlyweightFactory ff;
 	public Player player;
+        ServerInt serv;
+        int id;
 	/* For testing purposes only
 	public static void main (String args []) {
 		FlyweightFactory ff = new FlyweightFactory();
 		Shop shop = new Shop(ff);
 	}
 	*/
-	public Shop (FlyweightFactory ff, Player p) {
+	public Shop (FlyweightFactory ff, Player p, ServerInt x, int i) {
 		this.setSize(500,500);
 		this.setDefaultCloseOperation(WindowConstants.HIDE_ON_CLOSE);
 		this.setLayout(new BorderLayout());
 		this.ff = ff;
 		this.player = p;
-
+                serv = x;
+                id = i;
 		JPanel items = new JPanel (new GridLayout(0,3));
 
 		//http://stackoverflow.com/questions/4898584/java-using-an-image-as-a-button
@@ -34,6 +38,10 @@ public class Shop extends JFrame
 		b1.addActionListener(new ActionListener(){
 			public void actionPerformed(ActionEvent ae) {
 				player.setItem(new StaminaHat());
+                                try{
+                                serv.refreshPlayer(id, player);
+                                }catch(RemoteException e){}
+                                
 			}
 		});
 
@@ -43,6 +51,12 @@ public class Shop extends JFrame
 		b2.addActionListener(new ActionListener(){
 			public void actionPerformed(ActionEvent ae) {
 				player.setItem(new Axe());
+                                try{
+                                serv.refreshPlayer(id, player);
+                                System.out.println (player.atk + " " + player.item.getName());
+                                }catch(RemoteException e){
+                                    e.printStackTrace();
+                                }
 			}
 		});
 
@@ -52,6 +66,9 @@ public class Shop extends JFrame
 		b3.addActionListener(new ActionListener(){
 			public void actionPerformed(ActionEvent ae) {
 				player.setItem(new Dress());
+                                try{
+                                serv.refreshPlayer(id, player);
+                                }catch(RemoteException e){}
 			}
 		});
 
@@ -61,6 +78,9 @@ public class Shop extends JFrame
 		b4.addActionListener(new ActionListener(){
 			public void actionPerformed(ActionEvent ae) {
 				player.setItem(new HealingPotion());
+                                try{
+                                serv.refreshPlayer(id, player);
+                                }catch(RemoteException e){}
 			}
 		});
 
@@ -71,6 +91,9 @@ public class Shop extends JFrame
 		b5.addActionListener(new ActionListener(){
 			public void actionPerformed(ActionEvent ae) {
 				player.setItem(new Sword());
+                                try{
+                                serv.refreshPlayer(id, player);
+                                }catch(RemoteException e){}
 			}
 		});
 
@@ -80,6 +103,9 @@ public class Shop extends JFrame
 		b6.addActionListener(new ActionListener(){
 			public void actionPerformed(ActionEvent ae) {
 				player.setItem(new Shield());
+                                try{
+                                serv.refreshPlayer(id, player);
+                                }catch(RemoteException e){}
 			}
 		});
 
