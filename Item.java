@@ -1,6 +1,7 @@
 //Item interface
 
 public interface Item {
+	public String getName ();
 	public boolean isWeapon ();
 	public boolean isArmor ();
 	public boolean isAccessory ();
