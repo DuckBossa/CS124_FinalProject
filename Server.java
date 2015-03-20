@@ -330,6 +330,7 @@ public class Server extends UnicastRemoteObject implements ServerInt{
 			e.updateRectangle();
 		}
 		for(int i = 0; i < arrow.size(); i++){
+			if(i < 0){break;}
 			Arrow a = arrow.get(i);
 			a.move();
 			if(a.motionLife()){
@@ -337,12 +338,7 @@ public class Server extends UnicastRemoteObject implements ServerInt{
                                 Player player = characters.get(j);
 				if(player.collide(a.hitbox)){
 					player.takeDamage(a.dmg);
-					try{
 					arrow.remove(i);
-					} catch(Exception e)
-					{
-						System.out.println(i);
-					}
                                         i--;
 				}
                             }
