@@ -50,6 +50,7 @@ public class GameWindow{
 	private ArrayList<String> pressed;
 	public Shop shop;
 	public Settings keyset;
+	public JLabel curItem, curLevel, curGold, curHP, curAttack, curDef;
 	public GameWindow()throws IOException{
 		pressed = new ArrayList<String>();
 		key = (int) '.';
@@ -189,6 +190,15 @@ public class GameWindow{
 			animate();
 			collide();
 			render();
+			curLevel.setText("Level: " + player.lvl);
+			curItem.setText("Item: <empty>");
+			if (player.item!=null)
+				curItem.setText("Item: " + player.item.getName());
+			curHP.setText("Health: " + player.hp);
+			curAttack.setText("Attack: " + player.atk);
+			curDef.setText("Defense: " + player.def);
+			curGold.setText("Gold: " + player.gold);
+			mf.revalidate();
 
 	}
 
@@ -235,18 +245,23 @@ public class GameWindow{
 			});
 			setButton.setFocusable(false);
 
-			JLabel curLevel = new JLabel ("Level: " + player.lvl);
-			//JLabel curItem = new JLabel ("Using: " + player.item.name);
-			JLabel curHP = new JLabel ("Health: " + player.hp);
-			JLabel curAttack = new JLabel ("Attack: " + player.atk);
-			JLabel curDef = new JLabel ("Defense: " + player.def);
+			curLevel = new JLabel ("Level: " + player.lvl);
+			curItem = new JLabel ("Item: <empty>");
+			if (player.item!=null)
+				curItem = new JLabel ("Item: " + player.item.getName());
+			curHP = new JLabel ("Health: " + player.hp);
+			curAttack = new JLabel ("Attack: " + player.atk);
+			curDef = new JLabel ("Defense: " + player.def);
+			curGold = new JLabel ("Gold: " + player.gold);
 
 			statusBar.add(shopButton);
 			statusBar.add(setButton);
+			statusBar.add(curGold);
 			statusBar.add(curLevel);
 			statusBar.add(curHP);
 			statusBar.add(curAttack);
 			statusBar.add(curDef);
+			statusBar.add(curItem);
 			add(statusBar, BorderLayout.SOUTH);
 
 			addKeyListener(new Keyboard());
