@@ -19,7 +19,7 @@ public class MainMenu extends Canvas{
     Launch frame;
     JFrame x;
     JTextField IPs;
-    boolean start, load, exit;
+    public boolean load;
     BufferedImage bg, b1, b2, b3;
     
     public MainMenu(Launch x)
@@ -45,11 +45,13 @@ public class MainMenu extends Canvas{
                     if( e.getX() >= 10 && e.getX() <= 145 )
                     {
                         System.out.println("Started Game");
+						load = false;
                         popUp();
                         //start = true; // start game
                     } else if( e.getX() >= 155 && e.getX() <= 290 )
                     {
                         System.out.println("Loading Game");
+						load = true;
                         popUp();
                         //load = true; // load game
                     } else if( e.getX() >= 300 && e.getX() <= 435)
@@ -140,7 +142,7 @@ public class MainMenu extends Canvas{
                     public void actionPerformed(ActionEvent ae)
                     {
                         try{
-                            frame.setUpConnection(IPs.getText());
+                            frame.setUpConnection(IPs.getText(), load);
                             x.dispose();
                         } catch(Exception e)
                         {
