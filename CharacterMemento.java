@@ -39,6 +39,17 @@ public class CharacterMemento implements Serializable {
 		hp = c.hp;
 		gold = c.gold;
 		exp = c.exp;
+		if(c.item != null){
+			if (c.item.getName().equals("Axe (Weapon)")) item = new Axe();
+			else if(c.item.getName().equals("Sword (Weapon)")) item = new Sword();
+			else if(c.item.getName().equals("Dress (Armor)")) item = new Dress();
+			else if(c.item.getName().equals("Stamina Hat (Accessory)")) item = new StaminaHat();
+			else if(c.item.getName().equals("Shield (Armor)")) item = new Shield();
+			else item = new HealingPotion();
+		}
+		else{
+			item = null;
+		}
 	}
 
 	//arg is Character User that will be loaded with stats of this previously saved Memento
@@ -53,6 +64,8 @@ public class CharacterMemento implements Serializable {
 		c.h = h;
 		c.lvl = lvl;
 		c.hp = hp;
+		c.exp = exp;
+		c.gold = gold;
 		c.hitbox = new Rectangle2D.Double(x,y,w,h);
 		c.map.put("up", map.get("up"));
 		c.map.put("down", map.get("down"));
@@ -67,7 +80,8 @@ public class CharacterMemento implements Serializable {
 		c.hm.put((int)map.get("right").charAt(0), new MoveRight(c));
 		c.hm.put((int)map.get("attack").charAt(0), new Attack(c));
 		c.hm.put((int)map.get("item").charAt(0), new UseItem(c));
-		c.hm.put((int)'.',new DoNothing());										
+		c.hm.put((int)'.',new DoNothing());	
+		c.item = item;									
 
 	}
 }
