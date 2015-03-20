@@ -1,6 +1,9 @@
 //Concrete Accessory Item
 
 public class StaminaBelt implements Item {
+	public String getName () {
+		return "Stamina Belt (Accessory)";
+	}
 	public boolean isWeapon () {
 		return false;
 	}
