@@ -17,6 +17,8 @@ import javax.swing.*;
 public class MainMenu extends Canvas{
     
     Launch frame;
+	JFrame x;
+	JTextField IPs;
     boolean start, load, exit;
     BufferedImage bg, b1, b2, b3;
     
@@ -127,10 +129,10 @@ public class MainMenu extends Canvas{
     
     public void popUp()
     {
-        JFrame x = new JFrame("Server IP");
+        x = new JFrame("Server IP");
         x.setLayout(new BorderLayout());
         JPanel buttons = new JPanel();
-        JTextField IPs = new JTextField("Enter Server IP");
+        IPs = new JTextField("Enter Server IP");
         JButton ok = new JButton("OK");
         JButton ex = new JButton("CANCEL");
         ok.addActionListener(
