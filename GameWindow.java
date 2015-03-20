@@ -269,6 +269,7 @@ public class GameWindow implements Runnable{
 
 			statusBar.add(shopButton);
 			statusBar.add(setButton);
+			statusBar.add(saveButton);
 			statusBar.add(curGold);
 			statusBar.add(curLevel);
 			statusBar.add(curHP);
