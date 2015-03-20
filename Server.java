@@ -334,8 +334,9 @@ public class Server extends UnicastRemoteObject implements ServerInt{
 			Arrow a = arrow.get(i);
 			a.move();
 			if(a.motionLife()){
-                            for(int j = 0; j < characters.size(); j++){
-                                Player player = characters.get(j);
+                            for(int j = 0; j < keys.size(); j++){
+							
+                                Player player = characters.get(keys.get(j));
 				if(player.collide(a.hitbox)){
 					player.takeDamage(a.dmg);
 					arrow.remove(i);
