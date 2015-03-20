@@ -28,7 +28,7 @@ public class Shop extends JFrame
 		this.ff = ff;
                 serv = x;
                 id = i;
-		JPanel items = new JPanel (new GridLayout(0,3));
+		JPanel items = new JPanel (new GridLayout(0,4));
 
 		//http://stackoverflow.com/questions/4898584/java-using-an-image-as-a-button
 		JButton b1 = new JButton(new ImageIcon(ff.getImage("img/cap.png")));
@@ -36,12 +36,17 @@ public class Shop extends JFrame
 		b1.setContentAreaFilled(false);
 		b1.addActionListener(new ActionListener(){
 			public void actionPerformed(ActionEvent ae) {
-								try{
-								player = serv.getMyPlayer(id);
-								player.setItem(new StaminaHat());
-                                
-                                serv.refreshPlayer(id, player);
-                                }catch(RemoteException e){}
+				try{
+					player = serv.getMyPlayer(id);
+					if (player.gold<50) {
+						System.out.println ("Get lost! Bring me more gold!");
+						return;
+					}
+					player.setItem(new StaminaHat());
+					player.gold -= 50;
+	                
+	                serv.refreshPlayer(id, player);
+                }catch(RemoteException e){}
                                 
 			}
 		});
@@ -51,13 +56,18 @@ public class Shop extends JFrame
 		b2.setContentAreaFilled(false);
 		b2.addActionListener(new ActionListener(){
 			public void actionPerformed(ActionEvent ae) {
-			try{
-								player = serv.getMyPlayer(id);
-								player.setItem(new Axe());
-                                serv.refreshPlayer(id, player);
-                                }catch(RemoteException e){
-                                    e.printStackTrace();
-                                }
+				try{
+					player = serv.getMyPlayer(id);
+					if (player.gold<50) {
+						System.out.println ("Get lost! Bring me more gold!");
+						return;
+					}
+					player.gold -= 50;
+					player.setItem(new Axe());
+                    serv.refreshPlayer(id, player);
+                }catch(RemoteException e){
+                    e.printStackTrace();
+                }
 			}
 		});
 
@@ -66,11 +76,16 @@ public class Shop extends JFrame
 		b3.setContentAreaFilled(false);
 		b3.addActionListener(new ActionListener(){
 			public void actionPerformed(ActionEvent ae) {
-								try{
-								player = serv.getMyPlayer(id);
-								player.setItem(new Dress());
-                                serv.refreshPlayer(id, player);
-                                }catch(RemoteException e){}
+				try{
+					player = serv.getMyPlayer(id);
+					if (player.gold<50) {
+						System.out.println ("Get lost! Bring me more gold!");
+						return;
+					}
+					player.gold -= 50;
+					player.setItem(new Dress());
+	                serv.refreshPlayer(id, player);
+                }catch(RemoteException e){}
 			}
 		});
 
@@ -79,11 +94,16 @@ public class Shop extends JFrame
 		b4.setContentAreaFilled(false);
 		b4.addActionListener(new ActionListener(){
 			public void actionPerformed(ActionEvent ae) {
-								try{
-								player = serv.getMyPlayer(id);
-								player.setItem(new HealingPotion());
-                                serv.refreshPlayer(id, player);
-                                }catch(RemoteException e){}
+					try{
+					player = serv.getMyPlayer(id);
+					if (player.gold<200) {
+						System.out.println ("Get lost! Bring me more gold!");
+						return;
+					}
+					player.gold -= 200;
+					player.setItem(new HealingPotion());
+                    serv.refreshPlayer(id, player);
+                    }catch(RemoteException e){}
 			}
 		});
 
@@ -95,6 +115,11 @@ public class Shop extends JFrame
 			public void actionPerformed(ActionEvent ae) {
 			try{
 								player = serv.getMyPlayer(id);
+								if (player.gold<200) {
+						System.out.println ("Get lost! Bring me more gold!");
+						return;
+					}
+					player.gold -= 200;
 								player.setItem(new Sword());
                                 serv.refreshPlayer(id, player);
                                 }catch(RemoteException e){}
@@ -108,24 +133,32 @@ public class Shop extends JFrame
 			public void actionPerformed(ActionEvent ae) {
 			try{
 								player = serv.getMyPlayer(id);
+								if (player.gold<200) {
+						System.out.println ("Get lost! Bring me more gold!");
+						return;
+					}
+					player.gold -= 200;
 								player.setItem(new Shield());
                                 serv.refreshPlayer(id, player);
                                 }catch(RemoteException e){}
 			}
 		});
 
+		items.add(new JLabel("50 gold"));
 		items.add(b1);
 		items.add(b2);
 		items.add(b3);
+		items.add(new JLabel("200 gold"));
 		items.add(b4);
 		items.add(b5);
 		items.add(b6);
 		
 
 		JPanel labels = new JPanel (new GridLayout(1,3));
-		labels.add(new JLabel("Accessories",SwingConstants.CENTER));
-		labels.add(new JLabel("Weapons",SwingConstants.CENTER));
-		labels.add(new JLabel("Armors",SwingConstants.CENTER));
+		labels.add(new JLabel("Price"), SwingConstants.CENTER);
+		labels.add(new JLabel("Accessories", SwingConstants.CENTER));
+		labels.add(new JLabel("Weapons", SwingConstants.CENTER));
+		labels.add(new JLabel("Armors", SwingConstants.CENTER));
 
 		this.add(labels, BorderLayout.NORTH);
 		this.add(items, BorderLayout.CENTER);
