@@ -19,8 +19,7 @@ public class Settings extends JFrame {
 		Settings userSettings = new Settings();
 	}
 	*/
-	public Settings (Player p, ServerInt x, int i) {
-		this.p = p;
+	public Settings ( ServerInt x, int i) {
 		this.setSize(200,300);
 		this.setDefaultCloseOperation(WindowConstants.HIDE_ON_CLOSE);
 		this.setLayout(new BorderLayout());
@@ -80,6 +79,9 @@ class OpenSetting implements ActionListener {
 		this.s = s;
 	}
 	public void actionPerformed(ActionEvent ae) { 
+	try{
+								p = serv.getMyPlayer(id);
+								} catch (Exception e){}
 		String [] cur = new String [6];
 		cur[0] = s.text1.getText();
 		cur[1] = s.text2.getText();
