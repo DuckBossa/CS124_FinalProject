@@ -1,6 +1,6 @@
 //Concrete Weapon Item
 
-public class StaminaHat implements Item {
+public class Sword implements Item {
 	public String getName () {
 		return "Sword (Weapon)";
 	}
