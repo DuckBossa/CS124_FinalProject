@@ -32,6 +32,8 @@ public class Server extends UnicastRemoteObject implements ServerInt{
     ArrayList<Integer> keys;
     ArrayList<Enemy> enemies;
     ArrayList<Arrow> arrow;
+    JFrame x;
+    JTextField IPs;
     public static final int PLAYER_IMG_WIDTH = 32; //
     public static final int PLAYER_IMG_HEIGHT = 48; //
     	public static final int FPS = 60; 
@@ -54,10 +56,10 @@ public class Server extends UnicastRemoteObject implements ServerInt{
         keys = new ArrayList<Integer>();
         random = new Random();
         ef = new EnemyFactory(new Enemy(1,2,3,3,100,100,PLAYER_IMG_WIDTH,PLAYER_IMG_HEIGHT,1,0),getAllCharacters(),arrow);
-        JFrame x = new JFrame("IP ADDRESS FOR REFERENCE");
+        x = new JFrame("IP ADDRESS FOR REFERENCE");
         x.setLayout(new BorderLayout());
         JPanel buttons = new JPanel();
-        JTextField IPs = new JTextField("(optional) Enter your I.P. Address for reference");
+        IPs = new JTextField("(optional) Enter your I.P. Address for reference");
         JButton ok = new JButton("OK");
         JButton ex = new JButton("CANCEL");
         ok.addActionListener(
